@@ -77,8 +77,8 @@ void destructContext(HWND hWindow, HGLRC gl) {
 
 HGLRC context;
 
-TRARR trarr;
 SPRG sprg;
+GLTXTR tex;
 
 TIME_T prtime;
 
@@ -129,13 +129,11 @@ int WINAPI WinMain(HINSTANCE hInstance,
     initOpenGl();
 
     
-    trarr.push(vec2f(0, 0.9), vec3f(1, 0, 0), vec2f(0, 0));
-    trarr.push(vec2f(0.9, -0.9), vec3f(0, 1, 0), vec2f(0, 0));
-    trarr.push(vec2f(-0.9, -0.9), vec3f(0, 0, 1), vec2f(0, 0));
-    trarr.create();
-
-    
     sprg.loadFromFile("shader.vert", "", "", "", "shader.frag");
+    debug << "hui" << std::endl;
+    tex.open("pic.png", GL_RGBA);
+    debug << "hui" << std::endl;
+    sprg.setUniform("tex", tex);
 
     ShowWindow(hWindow, nCommandShow);
     UpdateWindow(hWindow);
@@ -157,8 +155,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 void yaSosuPenis(HWND hWindow) {
     TRARR trarr1;
     trarr1.push(vec2f(0, 0.9), vec3f(abs(sin(getCurTime() * 0.143)) + 0.1, 0, 0), vec2f(0, 0));
-    trarr1.push(vec2f(0.9, -0.9), vec3f(0, abs(sin(getCurTime() * 0.343)) + 0.1, 0), vec2f(0, 0));
-    trarr1.push(vec2f(-0.9, -0.9), vec3f(0, 0, abs(sin(getCurTime() * 0.413)) + 0.1), vec2f(0, 0));
+    trarr1.push(vec2f(0.9, -0.9), vec3f(0, abs(sin(getCurTime() * 0.343)) + 0.1, 0), vec2f(0, 1));
+    trarr1.push(vec2f(-0.9, -0.9), vec3f(0, 0, abs(sin(getCurTime() * 0.413)) + 0.1), vec2f(1, 0));
     trarr1.create();
 
     glClear(GL_COLOR_BUFFER_BIT);
