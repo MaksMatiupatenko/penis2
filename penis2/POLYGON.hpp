@@ -46,7 +46,13 @@ private:
     using POLYGON = __POLYGON<TYPE>;
 
 public:
-    static std::pair<vec_t, vec_t> getPointTangents(
+    /// <summary>
+    /// Finds tanget from a point to a convex polygon in O(log2n) time and O(1) memory complexitys.
+    /// </summary>
+    /// <param name="point"></param>
+    /// <param name="polygon"></param>
+    /// <returns></returns>
+    static std::pair<vec_t, vec_t> getPointToConvexPolygonTangents(
         const vec_t& point,
         const POLYGON& polygon) {
 
