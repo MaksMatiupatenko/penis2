@@ -146,10 +146,14 @@
     <ClInclude Include="BASE.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GLLOADER.hpp" />
+    <ClInclude Include="MAT3.hpp" />
     <ClInclude Include="MATH.h" />
     <ClInclude Include="penis2.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SHADER.hpp" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TEXTURE.hpp" />
+    <ClInclude Include="TIME.hpp" />
     <ClInclude Include="TRIANGLEARRAY.hpp" />
     <ClInclude Include="VEC2.hpp" />
     <ClInclude Include="VEC3.hpp" />

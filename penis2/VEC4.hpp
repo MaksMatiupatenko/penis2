@@ -3,21 +3,23 @@
 
 #include "BASE.h"
 #include "VEC3.hpp"
+#include "VEC2.hpp"
 
 template <typename FLOATTYPE>
 struct __VEC4 {
 private:
 #define DVEC __VEC4
+
 	using TYPE = FLOATTYPE;
 	using TREFERENCE = TYPE&;
-	using TCONSTREFERENCE = CONST TREFERENCE;
+	using TCONSTREFERENCE = CONST TYPE&;
 
 	using CTREF = TCONSTREFERENCE;
 	using TREF = TREFERENCE;
 
 	using VEC = DVEC<TYPE>;
 	using REFERENCE = VEC&;
-	using CONSTREFERENCE = CONST REFERENCE;
+	using CONSTREFERENCE = CONST VEC&;
 
 	using REF = REFERENCE;
 	using CREF = CONSTREFERENCE;
@@ -29,7 +31,8 @@ public:
 	DVEC() = default;
 	DVEC(CTREF x, CTREF y, CTREF z, CTREF w): x(x), y(y), z(z), w(w) {}
 	DVEC(CREF f, CREF s): x(s.x - f.x), y(s.y - f.y), z(s.z - f.z), w(s.w - f.w) {}
-	DVEC(__VEC3<TYPE> vec): x(vec.x), y(vec.y), z(vec.z), w(0) {}
+	DVEC(CONST __VEC3<TYPE>& vec): x(vec.x), y(vec.y), z(vec.z) {}
+	DVEC(CONST __VEC2<TYPE>& vec): x(vec.x), y(vec.y) {}
 
 	VEC operator-() CONST {
 		return { -x, -y, -z, -w };
@@ -80,7 +83,7 @@ public:
 	}
 
 	template <class type>
-	operator type() CONST {
+	operator DVEC<type>() CONST {
 		return { x, y, z, w };
 	}
 

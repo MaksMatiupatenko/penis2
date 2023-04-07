@@ -5,6 +5,7 @@
 #include "MATH.h"
 #include <vector>
 #include "GLLOADER.hpp"
+#include "SHADER.hpp"
 
 
 #define DYNARR std::vector
@@ -20,6 +21,10 @@ private:
 #define ATTRIBSINVERTEX 12
 
 public:
+	~TRARR() {
+		clear();
+	}
+
 	VOID push(vec4f coord, vec4f color, vec4f texcoord) {
 		data.push_back(coord.x);
 		data.push_back(coord.y);
@@ -44,11 +49,28 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.size(), data.data(), GL_STATIC_DRAW);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, ATTRIBSINVERTEX * sizeof(GLfloat), (void*)0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, ATTRIBSINVERTEX * sizeof(GLfloat), (void*)0);
 		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, ATTRIBSINVERTEX * sizeof(GLfloat), (void*)(0+TRVWIDTH));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, ATTRIBSINVERTEX * sizeof(GLfloat), (void*)(0+TRVWIDTH+TRVWIDTH));
+		glEnableVertexAttribArray(2);
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, NULL);
+		glBindVertexArray(NULL);
+	}
+
+	VOID draw(SPRG& sprg, mat3f model) {
+		sprg.setUniform("model", model);
+		glBindVertexArray(vao);
+		glDrawArrays(GL_TRIANGLES, 0, data.size() / ATTRIBSINVERTEX);
+		glBindVertexArray(NULL);
+	}
+
+	void clear() {
+		data.clear();
+		glDeleteVertexArrays(1, &vao);
+		glDeleteBuffers(1, &vbo);
 	}
 };
 
