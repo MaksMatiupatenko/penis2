@@ -35,6 +35,8 @@
 #define GL_FILL 0x1B02
 #define GL_KEEP 0x1E00
 #define GL_REPLACE 0x1E01
+#define GL_TEXTURE0 0x84C0
+#define GL_RG 0x8227
 
 typedef unsigned int GLuint;
 typedef int GLsizei;
@@ -193,6 +195,10 @@ typedef void(*GLACTIVETEXTURE)(GLenum texture);
 GLACTIVETEXTURE _glActiveTexture;
 #define glActiveTexture _glActiveTexture
 
+typedef void(*GLUNIFORM1I)(GLint location, GLint v0);
+GLUNIFORM1I _glUniform1i;
+#define glUniform1i _glUniform1i
+
 
 
 void* getAddress(const char* name) {
@@ -243,6 +249,7 @@ void initOpenGl() {
 	_glGetTexLevelParameteriv = (GLGETTEXLEVELPARAMETERIV)getAddress("glGetTexLevelParameteriv");
 	_glGetTexImage = (GLGETTEXIMAGE)getAddress("glGetTexImage");
 	_glActiveTexture = (GLACTIVETEXTURE)getAddress("glActiveTexture");
+	_glUniform1i = (GLUNIFORM1I)getAddress("glUniform1i");
 }
 
 #endif

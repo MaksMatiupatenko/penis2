@@ -7,6 +7,7 @@
 #include "GLLOADER.hpp"
 #include "MATH.h"
 #include "TEXTURE.hpp"
+#include <map>
 
 class SPRG {
 private:
@@ -40,6 +41,8 @@ private:
 	}
 
 	UINT id;
+
+    std::map <std::string, int> texnum;
 
 public:
 	~SPRG() {
@@ -101,10 +104,16 @@ public:
         UINT loc = glGetUniformLocation(id, name.c_str());
         glUniform1f(loc, value);
     }
-    void setUniform(std::string name, CONST GLTXTR& tex, UINT num) {
+    void setUniform(std::string name, GLTXTR& tex) {
         use();
-        UINT loc = glGetUniformLocation(id, name.c_str());
-        glUniform1f(loc, value);
+        if (!texnum.count(name)) {
+            texnum[name] = texnum.size();
+            UINT loc = glGetUniformLocation(id, name.c_str());
+            glUniform1i(loc, texnum[name]);
+        }
+        
+        glActiveTexture(GL_TEXTURE0 + texnum[name]);
+        tex.use();
     }
     void setUniform(std::string name, mat3f mat) {
         use();

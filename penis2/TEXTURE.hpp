@@ -16,11 +16,17 @@ private:
 
 public:
 	VOID create(GLenum textureFormat, int width, int height, GLenum dataFormat, const void* pixels) {
+		debug << "hui" << std::endl;
 		glGenTextures(1, &id);
+		debug << "hui" << std::endl;
 		glBindTexture(GL_TEXTURE_2D, id);
+		debug << "hui" << std::endl;
 		glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, pixels);
+		debug << "hui" << std::endl;
 		glGenerateMipmap(GL_TEXTURE_2D);
+		debug << "hui" << std::endl;
 		glBindTexture(GL_TEXTURE_2D, 0);
+		debug << "hui" << std::endl;
 	}
 
 	VOID use() {
@@ -32,8 +38,15 @@ public:
 
 		int width, height, nrChannels;
 		unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
+		for (int i = 0; i < 1000; ++i) {
+			debug << data[i];
+		}
+		debug << std::endl;
 
-		create(textureFormat, width, height, GL_RGBA, data);
+		debug << "hui" << std::endl;
+		GLenum dataFormat[] = { GL_RED, GL_RG, GL_RGB, GL_RGBA };
+		create(textureFormat, width, height, dataFormat[nrChannels - 1], data);
+		debug << "hui" << std::endl;
 
 		stbi_image_free(data);
 	}
@@ -52,10 +65,6 @@ public:
 		stbi_write_png(path.c_str(), width, height, 4, pixels, sizeof(unsigned char) * width * 4);
 
 		delete[] pixels;
-	}
-
-	UINT getid() CONST {
-		return id;
 	}
 };
 
