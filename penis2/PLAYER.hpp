@@ -3,12 +3,17 @@
 
 #include "BASE.h"
 #include "MATH.h"
+#include "CAMERA.h"
 
 class __PLAYER {
 private:
 	FLOAT _viewAngle{};
 	vec2f _pos{};
+
 public:
+	explicit __PLAYER(const FLOAT& viewAngle, const vec2f& pos) 
+		: _viewAngle(viewAngle), _pos(pos) { }
+
 	vec2f pos() const {
 		return _pos;
 	}
@@ -17,8 +22,8 @@ public:
 		_pos = newPos;
 	}
 
-	void move(vec2f) {
-		
+	void move(vec2f offset) {
+		_pos += offset;
 	}
 	
 	FLOAT viewAngle() const {
@@ -29,7 +34,17 @@ public:
 		_viewAngle += angle;
 	}
 
+	void setAngle(FLOAT newAngle) {
+		_viewAngle = newAngle;
+	}
 
+	vec2f getDir() const {
+		return vec2f(cos(_viewAngle), sin(_viewAngle));
+	}
+
+	Camera getCam() const {
+		// TODO: add realisation
+	}
 };
 
 #endif
