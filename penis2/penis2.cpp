@@ -127,7 +127,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
     context = createContext(hWindow);
 
     initOpenGl();
-
     
     trarr.push(vec2f(0, 0.9), vec3f(1, 0, 0), vec2f(0, 0));
     trarr.push(vec2f(0.9, -0.9), vec3f(0, 1, 0), vec2f(0, 0));

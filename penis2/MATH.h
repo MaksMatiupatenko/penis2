@@ -86,5 +86,25 @@ using mat3f = mat3<FLOAT>;
 using mat3d = mat3<FLOAT64>;
 //-------------------------------------------------------------------------
 
+//-------------------------------------------------------------- 2D Polygon
+#include "POLYGON.hpp"
+
+template <typename FLOATTYPE>
+using Polygon_t = __POLYGON<FLOATTYPE>;
+
+///Undefined behaviour warning.
+///Integer multiplication overflow to be expected.
+///Consider go fuck yourself.
+using Polygoni = Polygon_t<INT>;
+
+///Undefined behaviour warning.
+///Long long integer multiplication overflow to be expected.
+///Consider go fuck yourself.
+using Polygonl = Polygon_t<INT64>;
+
+using Polygonf = Polygon_t<FLOAT>;
+using Polygond = Polygon_t<FLOAT64>;
+//-------------------------------------------------------------------------
+
 
 #endif
