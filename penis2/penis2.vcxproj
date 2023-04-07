@@ -149,6 +149,7 @@
     <ClInclude Include="MAT3.hpp" />
     <ClInclude Include="MATH.h" />
     <ClInclude Include="penis2.h" />
+    <ClInclude Include="PLAYER.hpp" />
     <ClInclude Include="POLYGON.hpp" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SHADER.hpp" />

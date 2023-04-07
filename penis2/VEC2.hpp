@@ -27,8 +27,13 @@ public:
 	TREF r = x, g = y;
 
 	DVEC() = default;
-	DVEC(CTREF x, CTREF y): x(x), y(y) {}
-	DVEC(CREF f, CREF s): x(s.x - f.x), y(s.y - f.y) {}
+	DVEC(CTREF x, CTREF y) : x(x), y(y) {}
+	DVEC(CREF f, CREF s) : x(s.x - f.x), y(s.y - f.y) {}
+	DVEC(CREF f) = default;
+
+	REF operator=(CREF other) {
+		*this(other);
+	}
 
 	VEC operator-() CONST {
 		return { -x, -y };
@@ -57,6 +62,40 @@ public:
 	VEC operator/(CREF vec) CONST {
 		return { x / vec.x, y / vec.y };
 	}
+
+//UNAR AND BOOLEAN OPERATORS--------------------------------------
+	REF operator+=(CREF vec) {
+		return *THIS = (*THIS + vec);
+	}
+
+	REF operator-=(CREF vec) {
+		return *THIS = (*THIS - vec);
+	}
+
+	REF operator*=(CTREF val) {
+		return *THIS = (*THIS * val);
+	}
+
+	REF operator/=(CTREF val) {
+		return *THIS = (*THIS / val);
+	}
+
+	REF operator*=(CREF vec) {
+		return *THIS = (*THIS * vec);
+	}
+
+	REF operator/=(CREF vec) {
+		return *THIS = (*THIS / vec);
+	}
+
+	bool operator==(CREF vec) CONST {
+		return x == vec.x && y == vec.y;
+	}
+
+	bool operator!=(CREF vec) CONST {
+		return !(*THIS == vec);
+	}
+//----------------------------------------------------------------
 
 	friend TYPE dt(CREF vec1, CREF vec2) {
 		return vec1.x * vec2.x + vec1.y * vec2.y;
