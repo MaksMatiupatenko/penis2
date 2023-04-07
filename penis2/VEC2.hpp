@@ -7,16 +7,17 @@ template <typename FLOATTYPE>
 struct __VEC2 {
 private:
 #define DVEC __VEC2
+
 	using TYPE = FLOATTYPE;
 	using TREFERENCE = TYPE&;
-	using TCONSTREFERENCE = CONST TREFERENCE;
+	using TCONSTREFERENCE = CONST TYPE&;
 
 	using CTREF = TCONSTREFERENCE;
 	using TREF = TREFERENCE;
-	
+
 	using VEC = DVEC<TYPE>;
 	using REFERENCE = VEC&;
-	using CONSTREFERENCE = CONST REFERENCE;
+	using CONSTREFERENCE = CONST VEC&;
 
 	using REF = REFERENCE;
 	using CREF = CONSTREFERENCE;
@@ -83,7 +84,7 @@ public:
 	}
 
 	template <class type>
-	operator type() CONST {
+	operator DVEC<type>() CONST {
 		return { x, y };
 	}
 

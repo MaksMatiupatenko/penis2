@@ -1,5 +1,7 @@
 ﻿#include <windows.h>
 #include <fstream>
+#include <bitset>
+#include <cmath>
 
 std::ofstream debug("debug.txt");
 
@@ -8,6 +10,8 @@ std::ofstream debug("debug.txt");
 #include "glext.h"
 #include "MATH.h"
 #include "TRIANGLEARRAY.hpp"
+#include "SHADER.hpp"
+#include "TIME.hpp"
 
 #define STR_SIZE 100
 
@@ -33,12 +37,10 @@ static const PIXELFORMATDESCRIPTOR pfd =
 
 static const int context_attributes[] = {
     WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-    WGL_CONTEXT_MINOR_VERSION_ARB, 3,
+    WGL_CONTEXT_MINOR_VERSION_ARB, 0,
     WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
     0
 };
-
-
 
 using PFNWGLCREATECONTEXTATRIBSARBPROC = HGLRC(__cdecl*)(HDC, INT_PTR, const int*);
 
@@ -74,6 +76,15 @@ void destructContext(HWND hWindow, HGLRC gl) {
 
 
 HGLRC context;
+
+TRARR trarr;
+SPRG sprg;
+
+TIME_T prtime;
+
+void yaSosuPenis(HWND hwindow);
+
+bool windowOpen = true;
 
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE prevInstance,
@@ -113,32 +124,54 @@ int WINAPI WinMain(HINSTANCE hInstance,
                                 NULL);
     if (!hWindow) return FALSE;
 
-    ShowWindow(hWindow, nCommandShow);
-    UpdateWindow(hWindow);
-    
-
     context = createContext(hWindow);
 
     initOpenGl();
 
-    glViewport(0, 0, 800, 600);
-    glClearColor(1, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT);
+    
+    trarr.push(vec2f(0, 0.9), vec3f(1, 0, 0), vec2f(0, 0));
+    trarr.push(vec2f(0.9, -0.9), vec3f(0, 1, 0), vec2f(0, 0));
+    trarr.push(vec2f(-0.9, -0.9), vec3f(0, 0, 1), vec2f(0, 0));
+    trarr.create();
 
-    SwapBuffers(GetDC(hWindow));
+    
+    sprg.loadFromFile("shader.vert", "", "", "", "shader.frag");
+
+    ShowWindow(hWindow, nCommandShow);
+    UpdateWindow(hWindow);
+
+    setTime(prtime);
+    sprg.use();
 
     MSG msg;
-    while (GetMessage(&msg, NULL, 0, 0)) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+    while (windowOpen) {
+        yaSosuPenis(hWindow);
+        while (PeekMessage(&msg, hWindow, 0, 0, PM_REMOVE)) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
     }
     return msg.wParam;
 }
+
+void yaSosuPenis(HWND hWindow) {
+    TRARR trarr1;
+    trarr1.push(vec2f(0, 0.9), vec3f(abs(sin(getCurTime() * 0.143)) + 0.1, 0, 0), vec2f(0, 0));
+    trarr1.push(vec2f(0.9, -0.9), vec3f(0, abs(sin(getCurTime() * 0.343)) + 0.1, 0), vec2f(0, 0));
+    trarr1.push(vec2f(-0.9, -0.9), vec3f(0, 0, abs(sin(getCurTime() * 0.413)) + 0.1), vec2f(0, 0));
+    trarr1.create();
+
+    glClear(GL_COLOR_BUFFER_BIT);
+    trarr1.draw(sprg, translate(sin(getCurTime()), cos(getCurTime())) * rotate(getCurTime()));
+    SwapBuffers(GetDC(hWindow));
+}
+
 
 LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM lParam) {
     if (message == WM_DESTROY) {
         destructContext(hWindow, context);
         PostQuitMessage(0);
+        windowOpen = false;
         return 0;
     }
     if (message == WM_KEYDOWN) {
@@ -154,6 +187,14 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         if (wParam == 'D') {
             MessageBox(hWindow, L"bobr", L"kurwa", MB_OK);
         }
+        return 0;
+    }
+    if (message == WM_PAINT) {
+        yaSosuPenis(hWindow);
+        return 0;
+    }
+    if (message == WM_SIZE) {
+        glViewport(0, 0, LOWORD(lParam), HIWORD(lParam));
         return 0;
     }
 

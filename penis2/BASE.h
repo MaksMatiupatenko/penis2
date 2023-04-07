@@ -6,6 +6,7 @@
 #define THIS this
 #define lenpw2 lensq
 #define dstpw2 dstsq
+#define TRVWIDTH 16
 
 typedef float FLOAT;
 typedef int INT;

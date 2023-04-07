@@ -24,7 +24,7 @@ using vec2d = vec2<FLOAT64>;
 //-------------------------------------------------------------------------
 
 
-//--------------------------------------------------- 2 dimensional vector
+//--------------------------------------------------- 3 dimensional vector
 #include "VEC3.hpp"
 
 template <typename FLOATTYPE>
@@ -45,7 +45,7 @@ using vec3d = vec3<FLOAT64>;
 //-------------------------------------------------------------------------
 
 
-//--------------------------------------------------- 2 dimensional vector
+//--------------------------------------------------- 4 dimensional vector
 #include "VEC4.hpp"
 
 template <typename FLOATTYPE>
@@ -63,6 +63,27 @@ using vec4l = vec4<INT64>;
 
 using vec4f = vec4<FLOAT>;
 using vec4d = vec4<FLOAT64>;
+//-------------------------------------------------------------------------
+
+
+//--------------------------------------------------- 3x3 dimensional matrix
+#include "MAT3.hpp"
+
+template <typename FLOATTYPE>
+using mat3 = __MAT3<FLOATTYPE>;
+
+///Undefined behaviour warning.
+///Integer multiplication overflow to be expected.
+///Consider go fuck yourself.
+using mat3i = mat3<INT>;
+
+///Undefined behaviour warning.
+///Long long integer multiplication overflow to be expected.
+///Consider go fuck yourself.
+using mat3l = mat3<INT64>;
+
+using mat3f = mat3<FLOAT>;
+using mat3d = mat3<FLOAT64>;
 //-------------------------------------------------------------------------
 
 
