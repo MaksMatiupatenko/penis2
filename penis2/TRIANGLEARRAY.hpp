@@ -6,6 +6,8 @@
 #include <vector>
 #include "GLLOADER.hpp"
 #include "SHADER.hpp"
+#include "CAMERA.hpp"
+#include "CAMERA.h"
 
 
 #define DYNARR std::vector
@@ -60,8 +62,9 @@ public:
 		glBindVertexArray(NULL);
 	}
 
-	VOID draw(SPRG& sprg, mat3f model) {
+	VOID draw(SPRG& sprg, mat3f model, const Camera& camera) {
 		sprg.setUniform("model", model);
+		sprg.setUniform("view", camera.getMat());
 		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, data.size() / ATTRIBSINVERTEX);
 		glBindVertexArray(NULL);

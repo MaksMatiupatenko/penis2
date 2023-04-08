@@ -89,6 +89,7 @@ GLTXTR tex;
 GLTXTR tex2;
 GLTXTR tex3;
 GLRTXTR rtex;
+Camera camera;
 
 int wWidth, wHeigth;
 
@@ -98,10 +99,7 @@ void yaSosuPenis(HWND hwindow);
 
 bool windowOpen = true;
 
-int WINAPI WinMain(HINSTANCE hInstance,
-    HINSTANCE prevInstance,
-    LPSTR lpCommandLine,
-    int nCommandShow) {
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandLine, int nCommandShow) {
     /*                      */
     UNREFERENCED_PARAMETER(prevInstance);
     UNREFERENCED_PARAMETER(lpCommandLine);
@@ -130,8 +128,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
                                      WS_OVERLAPPEDWINDOW,
                                      0,
                                      0,
-                                     800,
-                                     600,
+                                     0,
+                                     0,
                                      NULL,
                                      NULL,
                                      hInstance,
@@ -146,12 +144,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
         wHeigth = mi.rcMonitor.bottom - mi.rcMonitor.top;
         hWindow = CreateWindow(L"windowClass",
                                L"windowTitle",
-                            WS_POPUP | WS_VISIBLE,
-                            mi.rcMonitor.left,
-                            mi.rcMonitor.top,
-                            wWidth,
-                            wHeigth,
-                            NULL, NULL, hInstance, 0);
+                               WS_POPUP | WS_VISIBLE,
+                               mi.rcMonitor.left,
+                               mi.rcMonitor.top,
+                               wWidth,
+                               wHeigth,
+                               NULL, NULL, hInstance, 0);
     }
 
 
@@ -174,7 +172,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     MSG msg;
     while (windowOpen) {
-
         yaSosuPenis(hWindow);
         while (PeekMessage(&msg, hWindow, 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);
@@ -204,22 +201,20 @@ void yaSosuPenis(HWND hWindow) {
     rtex.bind();
     glClear(GL_COLOR_BUFFER_BIT);
     sprg.setUniform("tex", tex);
-    trarr.draw(sprg, rotate(getCurTime()));
+    trarr.draw(sprg, rotatem(getCurTime()), camera);
     //trarr.draw(sprg, mat3f());
     rtex.unbind();
 
     glClear(GL_COLOR_BUFFER_BIT);
     sprg.setUniform("tex", rtex.getTexture());
     //sprg.setUniform("tex", tex);
-    trarr.draw(sprg, mat3f());
+    trarr2.draw(sprg, mat3f(), camera);
 
     SwapBuffers(GetDC(hWindow));
 }
 
 
 LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM lParam) {
-    LRESULT __Res = 0;
-    auto timeDiff = getTimeDiff(prtime);
     if (message == WM_DESTROY) {
         destructContext(hWindow, context);
         PostQuitMessage(0);
@@ -228,8 +223,9 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         tex2.destruct();
         tex3.destruct();
         windowOpen = false;
+        return 0;
     }
-    else if (message == WM_KEYDOWN) {
+    if (message == WM_KEYDOWN) {
         if (wParam == VK_ESCAPE) {
             SendMessage(hWindow, WM_CLOSE, 0, 0);
         }
