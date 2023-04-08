@@ -177,6 +177,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+        setTime(prtime);
     }
     return msg.wParam;
 }
@@ -228,8 +229,22 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         if (wParam == VK_ESCAPE) {
             SendMessage(hWindow, WM_CLOSE, 0, 0);
         }
-        return 0;
+        else if (wParam == 'W') {
+            player.move(timeDiff * player.movementSpeed);
+        }
+        else if (wParam == 'S') {
+            player.move(-timeDiff * player.movementSpeed);
+        }
+        else if (wParam == VK_LEFT) {
+            player.rotate(timeDiff * player.rotationSpeed);
+        } 
+        else if (wParam == VK_RIGHT) {
+            player.rotate(-timeDiff * player.rotationSpeed);
+        }
+        //debug << player.pos().x << " " << player.pos().y << std::endl;
     }
-
-    return DefWindowProc(hWindow, message, wParam, lParam);;
+    else {
+        __Res = DefWindowProc(hWindow, message, wParam, lParam);
+    }
+    return __Res;
 }
