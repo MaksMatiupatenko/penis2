@@ -12,6 +12,11 @@ std::ofstream debug("debug.txt");
 #include "TRIANGLEARRAY.hpp"
 #include "SHADER.hpp"
 #include "TIME.hpp"
+#include "RENDERTEXTURE.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 #define STR_SIZE 100
 
@@ -79,6 +84,9 @@ HGLRC context;
 
 SPRG sprg;
 GLTXTR tex;
+GLTXTR tex2;
+GLTXTR tex3;
+GLRTXTR rtex;
 
 TIME_T prtime;
 
@@ -129,10 +137,11 @@ int WINAPI WinMain(HINSTANCE hInstance,
     initOpenGl();
     
     sprg.loadFromFile("shader.vert", "", "", "", "shader.frag");
-    debug << "hui" << std::endl;
     tex.open("pic.png", GL_RGBA);
-    debug << "hui" << std::endl;
-    sprg.setUniform("tex", tex);
+    tex2.open("pic2.png", GL_RGBA);
+    tex3.create(GL_RGBA, 800, 600, GL_RGBA, NULL);
+    rtex.create();
+    rtex.createTexture(GL_RGBA, 800, 600);
 
     ShowWindow(hWindow, nCommandShow);
     UpdateWindow(hWindow);
@@ -152,14 +161,38 @@ int WINAPI WinMain(HINSTANCE hInstance,
 }
 
 void yaSosuPenis(HWND hWindow) {
-    TRARR trarr1;
-    trarr1.push(vec2f(0, 0.9), vec3f(abs(sin(getCurTime() * 0.143)) + 0.1, 0, 0), vec2f(0, 0));
-    trarr1.push(vec2f(0.9, -0.9), vec3f(0, abs(sin(getCurTime() * 0.343)) + 0.1, 0), vec2f(0, 1));
-    trarr1.push(vec2f(-0.9, -0.9), vec3f(0, 0, abs(sin(getCurTime() * 0.413)) + 0.1), vec2f(1, 0));
-    trarr1.create();
+    TRARR trarr;
+    trarr.push(vec2f(0, 0.9), vec3f(0, 0, 0), vec2f(0, 0));
+    trarr.push(vec2f(0.9, -0.9), vec3f(0, 0, 0), vec2f(0, 1));
+    trarr.push(vec2f(-0.9, -0.9), vec3f(0, 0, 0), vec2f(1, 0));
+    trarr.create();
+
+    TRARR trarr2;
+    trarr2.push(vec2f(-1, -1), vec3f(0, 0, 0), vec2f(0, 1));
+    trarr2.push(vec2f(1, -1), vec3f(0, 0, 0), vec2f(1, 1));
+    trarr2.push(vec2f(1, 1), vec3f(0, 0, 0), vec2f(1, 0));
+    trarr2.push(vec2f(-1, -1), vec3f(0, 0, 0), vec2f(0, 1));
+    trarr2.push(vec2f(-1, 1), vec3f(0, 0, 0), vec2f(0, 0));
+    trarr2.push(vec2f(1, 1), vec3f(0, 0, 0), vec2f(1, 0));
+    trarr2.create();
+
+    rtex.bind();
+    glClear(GL_COLOR_BUFFER_BIT);
+    sprg.setUniform("tex", tex);
+    trarr.draw(sprg, rotate(getCurTime()));
+    //trarr.draw(sprg, mat3f());
+    rtex.unbind();
+
+
+    
+
+    
 
     glClear(GL_COLOR_BUFFER_BIT);
-    trarr1.draw(sprg, translate(sin(getCurTime()), cos(getCurTime())) * rotate(getCurTime()));
+    sprg.setUniform("tex", rtex.getTexture());
+    //sprg.setUniform("tex", tex);
+    trarr.draw(sprg, mat3f());
+
     SwapBuffers(GetDC(hWindow));
 }
 
@@ -168,11 +201,16 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
     if (message == WM_DESTROY) {
         destructContext(hWindow, context);
         PostQuitMessage(0);
+        tex.destruct();
+        rtex.destruct();
+        tex2.destruct();
+        tex3.destruct();
         windowOpen = false;
         return 0;
     }
     if (message == WM_KEYDOWN) {
-        if (wParam == 'W') {
+        //// от этой хуйни все падает
+        /*if (wParam == 'W') {
             MessageBox(hWindow, L"sosi", L"hui", MB_OK);
         }
         if (wParam == 'A') {
@@ -183,7 +221,7 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         }
         if (wParam == 'D') {
             MessageBox(hWindow, L"bobr", L"kurwa", MB_OK);
-        }
+        }*/
         return 0;
     }
     if (message == WM_PAINT) {
@@ -192,6 +230,8 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
     }
     if (message == WM_SIZE) {
         glViewport(0, 0, LOWORD(lParam), HIWORD(lParam));
+        rtex.deleteTexture();
+        rtex.createTexture(GL_RGBA, LOWORD(lParam), HIWORD(lParam));
         return 0;
     }
 

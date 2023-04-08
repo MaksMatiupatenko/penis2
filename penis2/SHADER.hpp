@@ -104,7 +104,7 @@ public:
         UINT loc = glGetUniformLocation(id, name.c_str());
         glUniform1f(loc, value);
     }
-    void setUniform(std::string name, GLTXTR& tex) {
+    void setUniform(std::string name, CONST GLTXTR& tex) {
         use();
         if (!texnum.count(name)) {
             texnum[name] = texnum.size();
