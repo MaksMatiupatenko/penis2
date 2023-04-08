@@ -148,6 +148,7 @@
     <ClInclude Include="CAMERA.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GLLOADER.hpp" />
+    <ClInclude Include="PLAYER.h" />
     <ClInclude Include="MAT3.hpp" />
     <ClInclude Include="MATH.h" />
     <ClInclude Include="penis2.h" />

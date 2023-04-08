@@ -95,9 +95,9 @@ void yaSosuPenis(HWND hwindow);
 bool windowOpen = true;
 
 int WINAPI WinMain(HINSTANCE hInstance,
-                   HINSTANCE prevInstance,
-                   LPSTR lpCommandLine,
-                   int nCommandShow) {
+    HINSTANCE prevInstance,
+    LPSTR lpCommandLine,
+    int nCommandShow) {
     /*                      */
     UNREFERENCED_PARAMETER(prevInstance);
     UNREFERENCED_PARAMETER(lpCommandLine);
@@ -120,22 +120,22 @@ int WINAPI WinMain(HINSTANCE hInstance,
     }
 
     HWND hWindow = CreateWindow(L"windowClass",
-                                L"windowTitle",
-                                WS_OVERLAPPEDWINDOW,
-                                0,
-                                0,
-                                800,
-                                600,
-                                NULL,
-                                NULL,
-                                hInstance,
-                                NULL);
+        L"windowTitle",
+        WS_OVERLAPPEDWINDOW,
+        0,
+        0,
+        800,
+        600,
+        NULL,
+        NULL,
+        hInstance,
+        NULL);
     if (!hWindow) return FALSE;
 
     context = createContext(hWindow);
 
     initOpenGl();
-    
+
     sprg.loadFromFile("shader.vert", "", "", "", "shader.frag");
     tex.open("pic.png", GL_RGBA);
     tex2.open("pic2.png", GL_RGBA);
