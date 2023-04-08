@@ -247,17 +247,6 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         }
         //debug << player.pos().x << " " << player.pos().y << std::endl;
     }
-    else if (message == WM_PAINT) {
-        PAINTSTRUCT ps;
-        yaSosuPenis(hWindow);
-        BeginPaint(hWindow, &ps);
-        EndPaint(hWindow, &ps);
-    }
-    else if (message == WM_SIZE) {
-        glViewport(0, 0, LOWORD(lParam), HIWORD(lParam));
-        rtex.deleteTexture();
-        rtex.createTexture(GL_RGBA, LOWORD(lParam), HIWORD(lParam));
-    }
     else {
         __Res = DefWindowProc(hWindow, message, wParam, lParam);
     }
