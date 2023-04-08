@@ -1,8 +1,15 @@
 #ifndef __CAMERAHPP__
 #define __CAMERAHPP__
 
-class __CAMERA {
-	// TODO: add realisation
+#include "TRANSFORM.hpp"
+
+class Camera: public Transform {
+private:
+
+public:
+	mat3f getMat() const {
+		return translatem(-Transform::getPos()) * rotatem(-Transform::getAngle()) * scalem(vec2f(1, 1) / Transform::getScale());
+	}
 };
 
-#endif // !__CAMERAHPP__
+#endif

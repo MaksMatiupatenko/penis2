@@ -64,23 +64,34 @@ public:
 };
 
 
-__MAT3<FLOAT> translate(FLOAT x, FLOAT y) {
+__MAT3<FLOAT> translatem(FLOAT x, FLOAT y) {
 	return __MAT3<FLOAT>(
 		1, 0, x,
 		0, 1, y,
 		0, 0, 1
 		);
 }
-__MAT3<FLOAT> translate(__VEC2 <FLOAT> vec) {
-	return translate(vec.x, vec.y);
+__MAT3<FLOAT> translatem(__VEC2 <FLOAT> vec) {
+	return translatem(vec.x, vec.y);
 }
 
-__MAT3<FLOAT> rotate(FLOAT angle) {
+__MAT3<FLOAT> rotatem(FLOAT angle) {
 	return __MAT3<FLOAT>(
 		cos(angle), sin(angle), 0,
 		-sin(angle), cos(angle), 0,
 		0, 0, 1
 		);
+}
+
+__MAT3<FLOAT> scalem(FLOAT x, FLOAT y) {
+	return __MAT3<FLOAT>(
+		x, 0, 0,
+		0, y, 0,
+		0, 0, 1
+		);
+}
+__MAT3<FLOAT> scalem(vec2f vec) {
+	return scalem(vec.x, vec.y);
 }
 
 

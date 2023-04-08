@@ -50,7 +50,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -161,6 +161,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TEXTURE.hpp" />
     <ClInclude Include="TIME.hpp" />
+    <ClInclude Include="TRANSFORM.hpp" />
     <ClInclude Include="TRIANGLEARRAY.hpp" />
     <ClInclude Include="VEC2.hpp" />
     <ClInclude Include="VEC3.hpp" />

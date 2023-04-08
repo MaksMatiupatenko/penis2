@@ -3,6 +3,6 @@
 
 #include "CAMERA.hpp"
 
-typedef __CAMERA Camera;
+//typedef __CAMERA Camera;
 
 #endif // !__CAMERAH__
