@@ -90,6 +90,8 @@ GLTXTR tex2;
 GLTXTR tex3;
 GLRTXTR rtex;
 
+int wWidth, wHeigth;
+
 TIME_T prtime;
 
 void yaSosuPenis(HWND hwindow);
@@ -121,18 +123,37 @@ int WINAPI WinMain(HINSTANCE hInstance,
         return FALSE;
     }
 
-    HWND hWindow = CreateWindow(L"windowClass",
-        L"windowTitle",
-        WS_OVERLAPPEDWINDOW,
-        0,
-        0,
-        800,
-        600,
-        NULL,
-        NULL,
-        hInstance,
-        NULL);
-    if (!hWindow) return FALSE;
+    HWND hWindow;
+    {
+        HWND hWindow1 = CreateWindow(L"windowClass",
+                                     L"windowTitle",
+                                     WS_OVERLAPPEDWINDOW,
+                                     0,
+                                     0,
+                                     800,
+                                     600,
+                                     NULL,
+                                     NULL,
+                                     hInstance,
+                                     NULL);
+
+        HMONITOR hmon = MonitorFromWindow(hWindow1,
+                                          MONITOR_DEFAULTTONEAREST);
+        MONITORINFO mi = { sizeof(mi) };
+        if (!GetMonitorInfo(hmon, &mi)) return NULL;
+
+        wWidth = mi.rcMonitor.right - mi.rcMonitor.left;
+        wHeigth = mi.rcMonitor.bottom - mi.rcMonitor.top;
+        hWindow = CreateWindow(L"windowClass",
+                               L"windowTitle",
+                            WS_POPUP | WS_VISIBLE,
+                            mi.rcMonitor.left,
+                            mi.rcMonitor.top,
+                            wWidth,
+                            wHeigth,
+                            NULL, NULL, hInstance, 0);
+    }
+
 
     context = createContext(hWindow);
 
@@ -141,9 +162,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
     sprg.loadFromFile("shader.vert", "", "", "", "shader.frag");
     tex.open("pic.png", GL_RGBA);
     tex2.open("pic2.png", GL_RGBA);
-    tex3.create(GL_RGBA, 800, 600, GL_RGBA, NULL);
+    tex3.create(GL_RGBA, wWidth, wHeigth, GL_RGBA, NULL);
     rtex.create();
-    rtex.createTexture(GL_RGBA, 800, 600);
+    rtex.createTexture(GL_RGBA, wWidth, wHeigth);
 
     ShowWindow(hWindow, nCommandShow);
     UpdateWindow(hWindow);
@@ -153,6 +174,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     MSG msg;
     while (windowOpen) {
+
         yaSosuPenis(hWindow);
         while (PeekMessage(&msg, hWindow, 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);
@@ -188,7 +210,7 @@ void yaSosuPenis(HWND hWindow) {
     glClear(GL_COLOR_BUFFER_BIT);
     sprg.setUniform("tex", rtex.getTexture());
     //sprg.setUniform("tex", tex);
-    trarr2.draw(sprg, mat3f());
+    trarr.draw(sprg, mat3f());
 
     SwapBuffers(GetDC(hWindow));
 }

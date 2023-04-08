@@ -157,6 +157,7 @@
     <ClInclude Include="RENDERTEXTURE.hpp" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SHADER.hpp" />
+    <ClInclude Include="SPRITE.hpp" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TEXTURE.hpp" />
     <ClInclude Include="TIME.hpp" />
