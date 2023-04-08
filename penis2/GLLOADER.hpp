@@ -39,6 +39,14 @@
 #define GL_RG 0x8227
 #define GL_FRAMEBUFFER 0x8D40
 #define GL_COLOR_ATTACHMENT0 0x8CE0
+#define GL_TEXTURE_MAG_FILTER 0x2800
+#define GL_TEXTURE_MIN_FILTER 0x2801
+#define GL_NEAREST 0x2600
+#define GL_LINEAR 0x2601
+#define GL_NEAREST_MIPMAP_NEAREST 0x2700
+#define GL_LINEAR_MIPMAP_NEAREST 0x2701
+#define GL_NEAREST_MIPMAP_LINEAR 0x2702
+#define GL_LINEAR_MIPMAP_LINEAR 0x2703
 
 typedef unsigned int GLuint;
 typedef int GLsizei;
@@ -221,6 +229,10 @@ typedef void(*GLFRAMEBUFFERTEXTURE)(GLenum target, GLenum attachment, GLuint tex
 GLFRAMEBUFFERTEXTURE _glFramebufferTexture;
 #define glFramebufferTexture _glFramebufferTexture
 
+typedef void(*GLTEXPARAMETERI)(GLenum target, GLenum pname, GLint param);
+GLTEXPARAMETERI _glTexParameteri;
+#define glTexParameteri _glTexParameteri
+
 
 
 void* getAddress(const char* name) {
@@ -278,6 +290,7 @@ void initOpenGl() {
 	_glUniform1i = (GLUNIFORM1I)getAddress("glUniform1i");
 	_glDeleteTextures = (GLDELETETEXTURES)getAddress("glDeleteTextures");
 	_glFramebufferTexture = (GLFRAMEBUFFERTEXTURE)getAddress("glFramebufferTexture");
+	_glTexParameteri = (GLTEXPARAMETERI)getAddress("glTexParameteri");
 }
 
 #endif
