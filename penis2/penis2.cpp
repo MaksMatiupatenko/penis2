@@ -13,6 +13,7 @@ std::ofstream debug("debug.txt");
 #include "SHADER.hpp"
 #include "TIME.hpp"
 #include "RENDERTEXTURE.hpp"
+#include "PLAYER.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -79,6 +80,7 @@ void destructContext(HWND hWindow, HGLRC gl) {
     wglDeleteContext(gl);
 }
 
+PLAYER player;
 
 HGLRC context;
 
@@ -193,6 +195,8 @@ void yaSosuPenis(HWND hWindow) {
 
 
 LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM lParam) {
+    LRESULT __Res = 0;
+    auto timeDiff = getTimeDiff(prtime);
     if (message == WM_DESTROY) {
         destructContext(hWindow, context);
         PostQuitMessage(0);
@@ -201,37 +205,38 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         tex2.destruct();
         tex3.destruct();
         windowOpen = false;
-        return 0;
     }
-    if (message == WM_KEYDOWN) {
-        if (wParam == 'W') {
-            MessageBox(hWindow, L"sosi", L"hui", MB_OK);
+    else if (message == WM_KEYDOWN) {
+        if (wParam == VK_ESCAPE) {
+            SendMessage(hWindow, WM_CLOSE, 0, 0);
         }
-        if (wParam == 'A') {
-            MessageBox(hWindow, L"hui", L"sosi", MB_OK);
+        else if (wParam == 'W') {
+            player.move(timeDiff * player.movementSpeed);
         }
-        if (wParam == 'S') {
-            MessageBox(hWindow, L"ty", L"pidr", MB_OK);
+        else if (wParam == 'S') {
+            player.move(-timeDiff * player.movementSpeed);
         }
-        if (wParam == 'D') {
-            MessageBox(hWindow, L"bobr", L"kurwa", MB_OK);
+        else if (wParam == VK_LEFT) {
+            player.rotate(timeDiff * player.rotationSpeed);
+        } 
+        else if (wParam == VK_RIGHT) {
+            player.rotate(-timeDiff * player.rotationSpeed);
         }
-        return 0;
     }
-    if (message == WM_PAINT) {
+    else if (message == WM_PAINT) {
         PAINTSTRUCT ps;
         yaSosuPenis(hWindow);
-
         BeginPaint(hWindow, &ps);
         EndPaint(hWindow, &ps);
-        return 0;
     }
-    if (message == WM_SIZE) {
+    else if (message == WM_SIZE) {
         glViewport(0, 0, LOWORD(lParam), HIWORD(lParam));
         rtex.deleteTexture();
         rtex.createTexture(GL_RGBA, LOWORD(lParam), HIWORD(lParam));
-        return 0;
     }
-
-    return DefWindowProc(hWindow, message, wParam, lParam);
+    else {
+        __Res = DefWindowProc(hWindow, message, wParam, lParam);
+    }
+    setTime(prtime);
+    return __Res;
 }
