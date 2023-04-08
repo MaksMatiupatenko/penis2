@@ -27,6 +27,7 @@ private:
 
 public:
 	TYPE data[3][3] = { {(TYPE)1, (TYPE)0, (TYPE)0}, {(TYPE)0, (TYPE)1, (TYPE)0}, {(TYPE)0, (TYPE)0, (TYPE)1} };
+	DMAT() = default;
 	DMAT(CTREF n00, CTREF n01, CTREF n02, CTREF n10, CTREF n11, CTREF n12, CTREF n20, CTREF n21, CTREF n22) {
 		data[0][0] = n00;
 		data[0][1] = n01;

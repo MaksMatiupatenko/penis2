@@ -37,6 +37,8 @@
 #define GL_REPLACE 0x1E01
 #define GL_TEXTURE0 0x84C0
 #define GL_RG 0x8227
+#define GL_FRAMEBUFFER 0x8D40
+#define GL_COLOR_ATTACHMENT0 0x8CE0
 
 typedef unsigned int GLuint;
 typedef int GLsizei;
@@ -199,6 +201,26 @@ typedef void(*GLUNIFORM1I)(GLint location, GLint v0);
 GLUNIFORM1I _glUniform1i;
 #define glUniform1i _glUniform1i
 
+typedef void(*GLDELETETEXTURES)(GLsizei n, const GLuint* textures);
+GLDELETETEXTURES _glDeleteTextures;
+#define glDeleteTextures _glDeleteTextures
+
+typedef void(*GLGENFRAMEBUFFERS)(GLsizei n, GLuint* framebuffers);
+GLGENFRAMEBUFFERS _glGenFramebuffers;
+#define glGenFramebuffers _glGenFramebuffers
+
+typedef void(*GLDELETEFRAMEBUFFERS)(GLsizei n, const GLuint* framebuffers);
+GLDELETEFRAMEBUFFERS _glDeleteFramebuffers;
+#define glDeleteFramebuffers _glDeleteFramebuffers
+
+typedef void(*GLBINDFRAMEBUFFER)(GLenum target, GLuint framebuffer);
+GLBINDFRAMEBUFFER _glBindFramebuffer;
+#define glBindFramebuffer _glBindFramebuffer
+
+typedef void(*GLFRAMEBUFFERTEXTURE)(GLenum target, GLenum attachment, GLuint texture, GLint level);
+GLFRAMEBUFFERTEXTURE _glFramebufferTexture;
+#define glFramebufferTexture _glFramebufferTexture
+
 
 
 void* getAddress(const char* name) {
@@ -212,7 +234,11 @@ void* getAddress(const char* name) {
 
 	return p;
 }
+
 void initOpenGl() {
+	_glGenFramebuffers = (GLGENFRAMEBUFFERS)getAddress("glGenFramebuffers");
+	_glDeleteFramebuffers = (GLDELETEFRAMEBUFFERS)getAddress("glDeleteFramebuffers");
+	_glBindFramebuffer = (GLBINDFRAMEBUFFER)getAddress("glBindFramebuffer");
 	_glGenBuffers = (GLGENBUFFERS)getAddress("glGenBuffers");
 	_glGenVertexArrays = (GLGENVERTEXARRAYS)getAddress("glGenVertexArrays");
 	_glBindVertexArray = (GLBINDVERTEXARRAY)getAddress("glBindVertexArray");
@@ -250,6 +276,8 @@ void initOpenGl() {
 	_glGetTexImage = (GLGETTEXIMAGE)getAddress("glGetTexImage");
 	_glActiveTexture = (GLACTIVETEXTURE)getAddress("glActiveTexture");
 	_glUniform1i = (GLUNIFORM1I)getAddress("glUniform1i");
+	_glDeleteTextures = (GLDELETETEXTURES)getAddress("glDeleteTextures");
+	_glFramebufferTexture = (GLFRAMEBUFFERTEXTURE)getAddress("glFramebufferTexture");
 }
 
 #endif
