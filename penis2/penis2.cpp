@@ -183,11 +183,6 @@ void yaSosuPenis(HWND hWindow) {
     //trarr.draw(sprg, mat3f());
     rtex.unbind();
 
-
-    
-
-    
-
     glClear(GL_COLOR_BUFFER_BIT);
     sprg.setUniform("tex", rtex.getTexture());
     //sprg.setUniform("tex", tex);
@@ -210,7 +205,7 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
     }
     if (message == WM_KEYDOWN) {
         //// от этой хуйни все падает
-        /*if (wParam == 'W') {
+        if (wParam == 'W') {
             MessageBox(hWindow, L"sosi", L"hui", MB_OK);
         }
         if (wParam == 'A') {
@@ -221,11 +216,14 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         }
         if (wParam == 'D') {
             MessageBox(hWindow, L"bobr", L"kurwa", MB_OK);
-        }*/
+        }
         return 0;
     }
     if (message == WM_PAINT) {
+        PAINTSTRUCT ps;
         yaSosuPenis(hWindow);
+        BeginPaint(hWindow, &ps);
+        EndPaint(hWindow, &ps);
         return 0;
     }
     if (message == WM_SIZE) {
