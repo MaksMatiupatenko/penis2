@@ -183,11 +183,6 @@ void yaSosuPenis(HWND hWindow) {
     //trarr.draw(sprg, mat3f());
     rtex.unbind();
 
-
-    
-
-    
-
     glClear(GL_COLOR_BUFFER_BIT);
     sprg.setUniform("tex", rtex.getTexture());
     //sprg.setUniform("tex", tex);
@@ -224,12 +219,11 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         return 0;
     }
     if (message == WM_PAINT) {
+        PAINTSTRUCT ps;
         yaSosuPenis(hWindow);
 
-        PAINTSTRUCT ps;
         BeginPaint(hWindow, &ps);
         EndPaint(hWindow, &ps);
-
         return 0;
     }
     if (message == WM_SIZE) {
