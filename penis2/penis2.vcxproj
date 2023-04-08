@@ -48,7 +48,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -144,11 +144,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BASE.h" />
+    <ClInclude Include="CAMERA.h" />
+    <ClInclude Include="CAMERA.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GLLOADER.hpp" />
     <ClInclude Include="MAT3.hpp" />
     <ClInclude Include="MATH.h" />
     <ClInclude Include="penis2.h" />
+    <ClInclude Include="PLAYER.hpp" />
     <ClInclude Include="POLYGON.hpp" />
     <ClInclude Include="RENDERTEXTURE.hpp" />
     <ClInclude Include="Resource.h" />

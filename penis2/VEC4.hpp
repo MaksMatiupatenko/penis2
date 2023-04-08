@@ -62,6 +62,40 @@ public:
 		return { x / vec.x, y / vec.y, z / vec.z, w * vec.w };
 	}
 
+//UNAR AND BOOLEAN OPERATORS--------------------------------------
+	REF operator+=(CREF vec) {
+		return *THIS = (*THIS + vec);
+	}
+
+	REF operator-=(CREF vec) {
+		return *THIS = (*THIS - vec);
+	}
+
+	REF operator*=(CTREF val) {
+		return *THIS = (*THIS * val);
+	}
+
+	REF operator/=(CTREF val) {
+		return *THIS = (*THIS / val);
+	}
+
+	REF operator*=(CREF vec) {
+		return *THIS = (*THIS * vec);
+	}
+
+	REF operator/=(CREF vec) {
+		return *THIS = (*THIS / vec);
+	}
+
+	bool operator==(CREF vec) CONST {
+		return x == vec.x && y == vec.y && z == vec.z && w == vec.w;
+	}
+
+	bool operator!=(CREF vec) CONST {
+		return !(*THIS == vec);
+	}
+//----------------------------------------------------------------
+
 	friend TYPE dt(CREF vec1, CREF vec2) {
 		return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z + vec1.w * vec2.w;
 	}
