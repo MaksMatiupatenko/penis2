@@ -180,6 +180,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+        setTime(prtime);
     }
     return msg.wParam;
 }
@@ -244,6 +245,7 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         else if (wParam == VK_RIGHT) {
             player.rotate(-timeDiff * player.rotationSpeed);
         }
+        //debug << player.pos().x << " " << player.pos().y << std::endl;
     }
     else if (message == WM_PAINT) {
         PAINTSTRUCT ps;
@@ -259,6 +261,5 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
     else {
         __Res = DefWindowProc(hWindow, message, wParam, lParam);
     }
-    setTime(prtime);
     return __Res;
 }

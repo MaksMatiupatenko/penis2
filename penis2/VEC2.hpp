@@ -32,7 +32,9 @@ public:
 	DVEC(CREF f) = default;
 
 	REF operator=(CREF other) {
-		return *this = VEC(other);
+		x = other.x;
+		y = other.y;
+		return *this;
 	}
 
 	VEC operator-() CONST {
