@@ -7,12 +7,17 @@
 
 class __PLAYER {
 private:
-	FLOAT _viewAngle{};
 	vec2f _pos{};
+	FLOAT _viewAngle{};
 
 public:
-	explicit __PLAYER(const FLOAT& viewAngle, const vec2f& pos) 
+	FLOAT movementSpeed = 1;
+	FLOAT rotationSpeed = 1;
+
+	__PLAYER(const vec2f& pos, const FLOAT& viewAngle) 
 		: _viewAngle(viewAngle), _pos(pos) { }
+
+	__PLAYER() = default;
 
 	vec2f pos() const {
 		return _pos;
@@ -24,6 +29,10 @@ public:
 
 	void move(vec2f offset) {
 		_pos += offset;
+	}
+
+	void move(FLOAT dist) {
+		_pos += getDir() * dist;
 	}
 	
 	FLOAT viewAngle() const {
