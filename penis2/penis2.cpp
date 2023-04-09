@@ -112,10 +112,10 @@ void processAsyncInput() {
         camera.rotate(-timeDiff);
     }
     if (GetAsyncKeyState('Z')) {
-        camera.scale(1.001);
+        camera.scale(exp(timeDiff));
     }
     if (GetAsyncKeyState('X')) {
-        camera.scale(0.999);
+        camera.scale(exp(-timeDiff));
     }
      /*if (wParam == 'W') {
          player.move(timeDiff * player.movementSpeed);
@@ -136,6 +136,7 @@ void processAsyncInput() {
 }
 
 bool windowOpen = true;
+float MAX_FPS = 60;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandLine, int nCommandShow) {
     /*                      */
@@ -211,9 +212,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     MSG msg;
     while (windowOpen) {
         timeDiff = getTimeDiff(prtime);
-        setTime(prtime);
-        processAsyncInput();
-        yaSosuPenis(hWindow);
+        if (timeDiff >= 1 / MAX_FPS) {
+            debug << 1 / timeDiff << '\n';
+
+            setTime(prtime);
+            processAsyncInput();
+            yaSosuPenis(hWindow);
+            GL_SHADERS_ORDER_HANDLER.clear();
+        }
+        
 
         while (PeekMessage(&msg, hWindow, 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);

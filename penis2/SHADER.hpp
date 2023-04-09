@@ -37,6 +37,13 @@ public:
         glUseProgram(curActive());
     }
 
+    void clear() {
+        while (!ACTIVE_SHADERS_STACK.empty()) {
+            ACTIVE_SHADERS_STACK.pop();
+        }
+        ACTIVE_SHADERS_STACK.push(0);
+    }
+
     ~__GL_SHADERS_ORDER_HANDLER() {
         glUseProgram(0);
     }
@@ -153,6 +160,7 @@ public:
         setActiveShader();
         UINT loc = glGetUniformLocation(id, name.c_str());
         glUniform1f(loc, value);
+        setInactive();
     }
     void setUniform(std::string name, CONST GLTXTR& tex) {
         setActiveShader();

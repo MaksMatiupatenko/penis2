@@ -66,6 +66,7 @@ public:
 	VOID draw(SPRG& sprg, mat3f model, const Camera& camera) {
 		sprg.setUniform("model", model);
 		sprg.setUniform("view", camera.getMat());
+		sprg.setActiveShader();
 		/*mat3f mt = camera.getMat();
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 3; ++j) {
@@ -77,6 +78,7 @@ public:
 		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, data.size() / ATTRIBSINVERTEX);
 		glBindVertexArray(NULL);
+		sprg.setInactive();
 	}
 
 	VOID clear() {
