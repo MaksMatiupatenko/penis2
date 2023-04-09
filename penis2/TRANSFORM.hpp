@@ -27,20 +27,38 @@ public:
 	void setPos(const vec2f& nPos) {
 		tpos = nPos;
 	}
+	void setPos(float x, float y) {
+		setPos({ x, y });
+	}
 	void setAngle(float nAngle) {
 		tangle = nAngle;
 	}
 	void setScale(const vec2f& nScale) {
 		tsize = nScale;
 	}
+	void setScale(float x, float y) {
+		setScale({ x, y });
+	}
+	void setScale(float nScale) {
+		tsize = { nScale, nScale };
+	}
 
 	void move(const vec2f& vec) {
-		tpos = tpos + vec;
+		tpos = getMat() * vec;
+	}
+	void move(float x, float y) {
+		move({ x, y });
 	}
 	void rotate(float _angle) {
 		tangle += _angle;
 	}
 	void scale(const vec2f& scale) {
+		tsize = tsize * scale;
+	}
+	void scale(float x, float y) {
+		scale({ x, y });
+	}
+	void scale(float scale) {
 		tsize = tsize * scale;
 	}
 };

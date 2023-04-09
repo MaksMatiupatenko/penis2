@@ -169,7 +169,8 @@ public:
     void setUniform(std::string name, mat3f mat) {
         setActiveShader();
         UINT loc = glGetUniformLocation(id, name.c_str());
-        glUniformMatrix3fv(loc, 1, GL_FALSE, mat[0]);
+        float mt[9] = { mat[0][0], mat[1][0], mat[2][0], mat[0][1], mat[1][1], mat[2][1], mat[0][2], mat[1][2], mat[2][2] };
+        glUniformMatrix3fv(loc, 1, GL_FALSE, mt);
         setInactive();
     }
 

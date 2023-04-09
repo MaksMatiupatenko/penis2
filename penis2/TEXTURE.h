@@ -8,7 +8,8 @@
 SPRG textureApplier;
 
 void initShaders() {
-	textureApplier.loadFromFile("textureApplier.vert", "", "", "", "textureApplier.frag");
+	//textureApplier.loadFromFile("textureApplier.vert", "", "", "", "textureApplier.frag");
+	textureApplier.loadFromFile("shader.vert", "", "", "", "shader.frag");
 }
 
 #endif // !__TEXTUREH__

@@ -89,8 +89,51 @@ Camera camera;
 int wWidth, wHeigth;
 
 TIME_T prtime;
+float timeDiff;
 
 void yaSosuPenis(HWND hwindow);
+void processAsyncInput() {
+    if (GetAsyncKeyState('W')) {
+        camera.move(0, timeDiff);
+    }
+    if (GetAsyncKeyState('S')) {
+        camera.move(0, -timeDiff);
+    }
+    if (GetAsyncKeyState('A')) {
+        camera.move(-timeDiff, 0);
+    }
+    if (GetAsyncKeyState('D')) {
+        camera.move(timeDiff, 0);
+    }
+    if (GetAsyncKeyState('Q')) {
+        camera.rotate(timeDiff);
+    }
+    if (GetAsyncKeyState('E')) {
+        camera.rotate(-timeDiff);
+    }
+    if (GetAsyncKeyState('Z')) {
+        camera.scale(1.001);
+    }
+    if (GetAsyncKeyState('X')) {
+        camera.scale(0.999);
+    }
+     /*if (wParam == 'W') {
+         player.move(timeDiff * player.movementSpeed);
+         camera.move(0, timeDiff * 100);
+        }
+     else if (wParam == 'S') {
+     player.move(-timeDiff * player.movementSpeed);
+     camera.move(0, -timeDiff * 100);
+        }
+     else if (wParam == 'A') {
+     player.rotate(timeDiff * player.rotationSpeed);
+     camera.move(-timeDiff * 100, 0);
+        }
+     else if (wParam == 'D') {
+     player.rotate(-timeDiff * player.rotationSpeed);
+     camera.move(timeDiff * 100, 0);
+        }*/
+}
 
 bool windowOpen = true;
 
@@ -158,6 +201,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     tex3.create(GL_RGBA, wWidth, wHeigth, GL_RGBA, NULL);
     rtex.create();
     rtex.createTexture(GL_RGBA, wWidth, wHeigth);
+    camera.setViewArea((float)wWidth / wHeigth, 1);
 
     ShowWindow(hWindow, nCommandShow);
     UpdateWindow(hWindow);
@@ -166,12 +210,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 
     MSG msg;
     while (windowOpen) {
+        timeDiff = getTimeDiff(prtime);
+        setTime(prtime);
+        processAsyncInput();
         yaSosuPenis(hWindow);
+
         while (PeekMessage(&msg, hWindow, 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-        setTime(prtime);
     }
     return msg.wParam;
 }
@@ -192,19 +239,23 @@ void yaSosuPenis(HWND hWindow) {
     trarr2.push(vec2f(1, 1), vec3f(0, 0, 0), vec2f(1, 0));
     trarr2.create();
 
+    //debug << camera.getPos().x << ' ' << camera.getPos().y << '\n';
+    //debug << camera.getPos().x << ' ' << camera.getPos().y << '\n';
+
     rtex.bind();
     glClear(GL_COLOR_BUFFER_BIT);
     textureApplier.setUniform("tex", tex);
     textureApplier.setActiveShader();
-    trarr.draw(textureApplier, rotatem(getCurTime()), camera);
+    //trarr.draw(textureApplier, rotatem(getCurTime()), camera);
     //trarr.draw(sprg, mat3f());
     rtex.unbind();
     textureApplier.setInactive();
 
     glClear(GL_COLOR_BUFFER_BIT);
-    textureApplier.setUniform("tex", rtex.getTexture());
+    //textureApplier.setUniform("tex", rtex.getTexture());
+    textureApplier.setUniform("tex", tex);
     textureApplier.setActiveShader();
-    trarr2.draw(textureApplier, mat3f(), camera);
+    trarr.draw(textureApplier, mat3f(), camera);
     textureApplier.setInactive();
 
     SwapBuffers(GetDC(hWindow));
@@ -212,8 +263,6 @@ void yaSosuPenis(HWND hWindow) {
 
 
 LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM lParam) {
-    LRESULT __Res = 0;
-    auto timeDiff = getTimeDiff(prtime);
     if (message == WM_DESTROY) {
         destructContext(hWindow, context);
         PostQuitMessage(0);
@@ -222,26 +271,14 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         tex2.destruct();
         tex3.destruct();
         windowOpen = false;
-    } else if (message == WM_KEYDOWN) {
+        return 0;
+    }
+    if (message == WM_KEYDOWN) {
         if (wParam == VK_ESCAPE) {
             SendMessage(hWindow, WM_CLOSE, 0, 0);
         }
-        else if (wParam == 'W') {
-            player.move(timeDiff * player.movementSpeed);
-        }
-        else if (wParam == 'S') {
-            player.move(-timeDiff * player.movementSpeed);
-        }
-        else if (wParam == VK_LEFT) {
-            player.rotate(timeDiff * player.rotationSpeed);
-        } 
-        else if (wParam == VK_RIGHT) {
-            player.rotate(-timeDiff * player.rotationSpeed);
-        }
-        //debug << player.pos().x << " " << player.pos().y << std::endl;
+        return 0;
     }
-    else {
-        __Res = DefWindowProc(hWindow, message, wParam, lParam);
-    }
-    return __Res;
+
+    return DefWindowProc(hWindow, message, wParam, lParam);
 }

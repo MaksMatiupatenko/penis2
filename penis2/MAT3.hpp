@@ -25,8 +25,9 @@ private:
 	using REF = REFERENCE;
 	using CREF = CONSTREFERENCE;
 
-public:
 	TYPE data[3][3] = { {(TYPE)1, (TYPE)0, (TYPE)0}, {(TYPE)0, (TYPE)1, (TYPE)0}, {(TYPE)0, (TYPE)0, (TYPE)1} };
+
+public:
 	DMAT() = default;
 	DMAT(CTREF n00, CTREF n01, CTREF n02, CTREF n10, CTREF n11, CTREF n12, CTREF n20, CTREF n21, CTREF n22) {
 		data[0][0] = n00;
@@ -61,6 +62,21 @@ public:
 			data[2][0] * mat[0][2] + data[2][1] * mat[1][2] + data[2][2] * mat[2][2]
 		};
 	}
+
+	__VEC3<TYPE> operator*(const __VEC3<TYPE>& vec) const {
+		return {
+			vec.x * data[0][0] + vec.y * data[0][1] + vec.z * data[0][2],
+			vec.x * data[1][0] + vec.y * data[1][1] + vec.z * data[1][2],
+			vec.x * data[2][0] + vec.y * data[2][1] + vec.z * data[2][2]
+		};
+	}
+
+	__VEC2<TYPE> operator*(const __VEC2<TYPE>& vec) const {
+		return {
+			vec.x * data[0][0] + vec.y * data[0][1] + data[0][2],
+			vec.x * data[1][0] + vec.y * data[1][1] + data[1][2]
+		};
+	}
 };
 
 
@@ -77,8 +93,8 @@ __MAT3<FLOAT> translatem(__VEC2 <FLOAT> vec) {
 
 __MAT3<FLOAT> rotatem(FLOAT angle) {
 	return __MAT3<FLOAT>(
-		cos(angle), sin(angle), 0,
-		-sin(angle), cos(angle), 0,
+		cos(angle), -sin(angle), 0,
+		sin(angle), cos(angle), 0,
 		0, 0, 1
 		);
 }
