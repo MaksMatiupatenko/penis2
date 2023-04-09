@@ -15,7 +15,7 @@ public:
     }
 
     void destruct() {
-        glGenFramebuffers(1, &fbo);
+        glDeleteFramebuffers(1, &fbo);
     }
 
     void createTexture(GLenum textureFormat, int width, int height) {
