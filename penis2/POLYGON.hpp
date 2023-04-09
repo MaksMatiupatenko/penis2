@@ -93,4 +93,8 @@ public:
     }
 };
 
+struct Triangle {
+    vec4f a{}, b{}, c{};
+};
+
 #endif

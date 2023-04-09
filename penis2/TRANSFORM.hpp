@@ -5,43 +5,43 @@
 
 class Transform {
 private:
-	vec2f pos;
-	float angle = 0;
-	vec2f size = vec2f(1, 1);
+	vec2f tpos;
+	float tangle = 0;
+	vec2f tsize = vec2f(1, 1);
 
 public:
 	mat3f getMat() const {
-		return translatem(pos) * rotatem(angle) * scalem(size);
+		return translatem(tpos) * rotatem(tangle) * scalem(tsize);
 	}
 
 	vec2f getPos() const {
-		return pos;
+		return tpos;
 	}
 	float getAngle() const {
-		return angle;
+		return tangle;
 	}
 	vec2f getScale() const {
-		return size;
+		return tsize;
 	}
 
 	void setPos(const vec2f& nPos) {
-		pos = nPos;
+		tpos = nPos;
 	}
 	void setAngle(float nAngle) {
-		angle = nAngle;
+		tangle = nAngle;
 	}
 	void setScale(const vec2f& nScale) {
-		size = nScale;
+		tsize = nScale;
 	}
 
 	void move(const vec2f& vec) {
-		pos = pos + vec;
+		tpos = tpos + vec;
 	}
 	void rotate(float _angle) {
-		angle += _angle;
+		tangle += _angle;
 	}
 	void scale(const vec2f& scale) {
-		size = size * scale;
+		tsize = tsize * scale;
 	}
 };
 

@@ -3,16 +3,12 @@
 #include <bitset>
 #include <cmath>
 
-std::ofstream debug("debug.txt");
-
 #include "GLLOADER.hpp"
 #define WGL_WGLEXT_PROTOTYPES
 #include "glext.h"
-#include "MATH.h"
 #include "TRIANGLEARRAY.hpp"
-#include "SHADER.hpp"
+#include "TEXTURE.h"
 #include "TIME.hpp"
-#include "RENDERTEXTURE.hpp"
 #include "PLAYER.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -84,7 +80,6 @@ PLAYER player;
 
 HGLRC context;
 
-SPRG sprg;
 GLTXTR tex;
 GLTXTR tex2;
 GLTXTR tex3;
@@ -156,8 +151,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     context = createContext(hWindow);
 
     initOpenGl();
+    initShaders();
 
-    sprg.loadFromFile("shader.vert", "", "", "", "shader.frag");
     tex.open("pic.png", GL_RGBA);
     tex2.open("pic2.png", GL_RGBA);
     tex3.create(GL_RGBA, wWidth, wHeigth, GL_RGBA, NULL);
@@ -168,7 +163,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     UpdateWindow(hWindow);
 
     setTime(prtime);
-    sprg.use();
 
     MSG msg;
     while (windowOpen) {
@@ -184,13 +178,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 
 void yaSosuPenis(HWND hWindow) {
     TRARR trarr;
-    trarr.push(vec2f(0, 0.9), vec3f(0, 0, 0), vec2f(0, 0));
-    trarr.push(vec2f(0.9, -0.9), vec3f(0, 0, 0), vec2f(0, 1));
-    trarr.push(vec2f(-0.9, -0.9), vec3f(0, 0, 0), vec2f(1, 0));
+    trarr.push(vec2f(0, 0.9), GLBLACK, vec2f(0, 0));
+    trarr.push(vec2f(0.9, -0.9), GLBLACK, vec2f(0, 1));
+    trarr.push(vec2f(-0.9, -0.9), GLBLACK, vec2f(1, 0));
     trarr.create();
 
     TRARR trarr2;
-    trarr2.push(vec2f(-1, -1), vec3f(0, 0, 0), vec2f(0, 1));
+    trarr2.push(vec2f(-1, -1), GLBLACK, vec2f(0, 1));
     trarr2.push(vec2f(1, -1), vec3f(0, 0, 0), vec2f(1, 1));
     trarr2.push(vec2f(1, 1), vec3f(0, 0, 0), vec2f(1, 0));
     trarr2.push(vec2f(-1, -1), vec3f(0, 0, 0), vec2f(0, 1));
@@ -200,15 +194,18 @@ void yaSosuPenis(HWND hWindow) {
 
     rtex.bind();
     glClear(GL_COLOR_BUFFER_BIT);
-    sprg.setUniform("tex", tex);
-    trarr.draw(sprg, rotatem(getCurTime()), camera);
+    textureApplier.setUniform("tex", tex);
+    textureApplier.setActiveShader();
+    trarr.draw(textureApplier, rotatem(getCurTime()), camera);
     //trarr.draw(sprg, mat3f());
     rtex.unbind();
+    textureApplier.setInactive();
 
     glClear(GL_COLOR_BUFFER_BIT);
-    sprg.setUniform("tex", rtex.getTexture());
-    //sprg.setUniform("tex", tex);
-    trarr2.draw(sprg, mat3f(), camera);
+    textureApplier.setUniform("tex", rtex.getTexture());
+    textureApplier.setActiveShader();
+    trarr2.draw(textureApplier, mat3f(), camera);
+    textureApplier.setInactive();
 
     SwapBuffers(GetDC(hWindow));
 }

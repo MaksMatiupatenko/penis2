@@ -8,6 +8,7 @@
 #include "SHADER.hpp"
 #include "CAMERA.hpp"
 #include "CAMERA.h"
+#include "COLOR.h"
 
 
 #define DYNARR std::vector
@@ -27,7 +28,7 @@ public:
 		clear();
 	}
 
-	VOID push(vec4f coord, vec4f color, vec4f texcoord) {
+	VOID push(vec4f coord, COLOR color, vec4f texcoord) {
 		data.push_back(coord.x);
 		data.push_back(coord.y);
 		data.push_back(coord.z);
@@ -70,7 +71,7 @@ public:
 		glBindVertexArray(NULL);
 	}
 
-	void clear() {
+	VOID clear() {
 		data.clear();
 		glDeleteVertexArrays(1, &vao);
 		glDeleteBuffers(1, &vbo);

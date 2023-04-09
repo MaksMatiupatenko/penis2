@@ -1,5 +1,5 @@
 #ifndef __TEXTUREHPP__
-#define __TEXTUPEHPP__
+#define __TEXTUREHPP__
 
 #include "BASE.h"
 #include "GLLOADER.hpp"
@@ -9,10 +9,11 @@
 
 class GLTXTR {
 private:
-	
 	UINT _id = 0;
 
 public:
+	GLTXTR() = default;
+
 	VOID create(GLenum textureFormat, int width, int height, GLenum dataFormat, const void* pixels) {
 		glGenTextures(1, &_id);
 		glBindTexture(GL_TEXTURE_2D, _id);

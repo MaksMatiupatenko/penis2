@@ -8,24 +8,57 @@
 #include "MATH.h"
 #include "TEXTURE.hpp"
 #include <map>
+#include <stack>
+
+struct __GL_SHADERS_ORDER_HANDLER {
+private:
+    std::stack<UINT> ACTIVE_SHADERS_STACK;
+
+public:
+    __GL_SHADERS_ORDER_HANDLER() {
+        ACTIVE_SHADERS_STACK.push(0);
+    }
+
+    void setActive(int id) {
+        ACTIVE_SHADERS_STACK.push(id);
+        glUseProgram(id);
+    }
+
+    const int& curActive() const {
+        return ACTIVE_SHADERS_STACK.top();
+    }
+
+    void setBack(int id, BOOL unsafe) {
+        auto cur = curActive();
+        if (!unsafe && cur != id) {
+            return;
+        }
+        ACTIVE_SHADERS_STACK.pop();
+        glUseProgram(curActive());
+    }
+
+    ~__GL_SHADERS_ORDER_HANDLER() {
+        glUseProgram(0);
+    }
+} GL_SHADERS_ORDER_HANDLER;
 
 class SPRG {
 private:
-	bool loadFromFile(const std::string& path, GLenum type, UINT& out) {
-		std::ifstream inp(path);
-		std::string s, code; 
-		while (std::getline(inp, s)) {
-			code += s;
-			code += '\n';
-		}
-		inp.close();
+    bool loadFromFile(const std::string& path, GLenum type, UINT& out) {
+        std::ifstream inp(path);
+        std::string s, code;
+        while (std::getline(inp, s)) {
+            code += s;
+            code += '\n';
+        }
+        inp.close();
 
         //debug << code << std::endl;
 
-		const char* cdata = code.c_str();
-		out = glCreateShader(type);
-		glShaderSource(out, 1, &cdata, 0);
-		glCompileShader(out);
+        const char* cdata = code.c_str();
+        out = glCreateShader(type);
+        glShaderSource(out, 1, &cdata, 0);
+        glCompileShader(out);
 
         int success;
         glGetShaderiv(out, GL_COMPILE_STATUS, &success);
@@ -38,18 +71,24 @@ private:
         }
 
         return true;
-	}
+    }
 
-	UINT id;
+    UINT id;
 
     std::map <std::string, int> texnum;
 
 public:
-	~SPRG() {
-		glDeleteProgram(id);
-	}
+    ~SPRG() {
+        glDeleteProgram(id);
+    }
 
-    bool loadFromFile(std::string vertex, std::string tessControl, std::string tessEvaluation, std::string geometry, std::string fragment) {
+    bool loadFromFile(
+        std::string vertex, 
+        std::string tessControl, 
+        std::string tessEvaluation, 
+        std::string geometry, 
+        std::string fragment) {
+
         UINT vert = 0, tessC = 0, tessE = 0, geom = 0, frag = 0;
         if (vertex != "") loadFromFile(vertex, GL_VERTEX_SHADER, vert);
         if (tessControl != "") loadFromFile(tessControl, GL_TESS_CONTROL_SHADER, tessC);
@@ -95,17 +134,28 @@ public:
         return true;
     }
 
-    void use() {
-        glUseProgram(id);
+    SPRG() = default;
+    SPRG(
+        std::string vertex, 
+        std::string tessControl, 
+        std::string tessEvaluation, 
+        std::string geometry, 
+        std::string fragment) {
+
+        loadFromFile(vertex, tessControl, tessEvaluation, geometry, fragment);
+    }
+
+    void setActiveShader() {
+        GL_SHADERS_ORDER_HANDLER.setActive(id);
     }
 
     void setUniform(std::string name, FLOAT value) {
-        use();
+        setActiveShader();
         UINT loc = glGetUniformLocation(id, name.c_str());
         glUniform1f(loc, value);
     }
     void setUniform(std::string name, CONST GLTXTR& tex) {
-        use();
+        setActiveShader();
         if (!texnum.count(name)) {
             texnum[name] = texnum.size();
             UINT loc = glGetUniformLocation(id, name.c_str());
@@ -114,11 +164,22 @@ public:
         
         glActiveTexture(GL_TEXTURE0 + texnum[name]);
         tex.use();
+        setInactive();
     }
     void setUniform(std::string name, mat3f mat) {
-        use();
+        setActiveShader();
         UINT loc = glGetUniformLocation(id, name.c_str());
         glUniformMatrix3fv(loc, 1, GL_FALSE, mat[0]);
+        setInactive();
+    }
+
+    /// <summary>
+    /// я тут ебнул эррор хендлинг типа. если верхушка стека это не мы, 
+    /// то ниче не происходит так что можно по поводу сейвовости этой хуеты не париться.
+    /// но если хочется для дебага сделать ее ансейвовой, то туда передаешь true
+    /// </summary>
+    void setInactive(BOOL unsafeVersion = FALSE) {
+        GL_SHADERS_ORDER_HANDLER.setBack(id, unsafeVersion);
     }
 };
 

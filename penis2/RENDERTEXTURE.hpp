@@ -1,8 +1,8 @@
 #ifndef __RENDERTEXTUREHPP__
 #define __RENDERTEXTUREHPP__
 
-//#include "TEXTURE.hpp"
-#include "GLLOADER.hpp"
+#include "TEXTURE.hpp"
+#include "BASE.h"
 
 class GLRTXTR {
 private:

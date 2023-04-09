@@ -1,6 +1,11 @@
 #ifndef __BASEH__
 #define __BASEH__
 
+#include "GLLOADER.hpp"
+
+std::ofstream debug("debug.txt");
+std::ofstream errLog("runtimeLog.txt");
+
 #define CONST const
 #define VOID void
 #define THIS this
