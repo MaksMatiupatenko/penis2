@@ -43,8 +43,13 @@ public:
     void bind() {
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     }
+
     void unbind() {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    ~GLRTXTR() {
+        unbind();
     }
 };
 
