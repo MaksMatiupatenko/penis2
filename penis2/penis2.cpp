@@ -215,6 +215,8 @@ void yaSosuPenis(HWND hWindow) {
 
 
 LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM lParam) {
+    LRESULT __Res = 0;
+    auto timeDiff = getTimeDiff(prtime);
     if (message == WM_DESTROY) {
         destructContext(hWindow, context);
         PostQuitMessage(0);
@@ -223,9 +225,7 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         tex2.destruct();
         tex3.destruct();
         windowOpen = false;
-        return 0;
-    }
-    if (message == WM_KEYDOWN) {
+    } else if (message == WM_KEYDOWN) {
         if (wParam == VK_ESCAPE) {
             SendMessage(hWindow, WM_CLOSE, 0, 0);
         }
