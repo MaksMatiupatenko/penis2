@@ -87,7 +87,9 @@ GLTXTR tex3;
 GLRTXTR rtex;
 Camera camera;
 
-int wWidth, wHeigth;
+vec2f mousePos;
+
+int wWidth, wHeight;
 
 TIME_T prtime;
 float timeDiff;
@@ -119,6 +121,8 @@ void processAsyncInput() {
         camera.scale(exp(-timeDiff));
     }
 }
+
+void updateConditions();
 
 bool windowOpen = true;
 float MAX_FPS = 60;
@@ -165,14 +169,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
         if (!GetMonitorInfo(hmon, &mi)) return NULL;
 
         wWidth = mi.rcMonitor.right - mi.rcMonitor.left;
-        wHeigth = mi.rcMonitor.bottom - mi.rcMonitor.top;
+        wHeight = mi.rcMonitor.bottom - mi.rcMonitor.top;
         hWindow = CreateWindow(L"windowClass",
                                L"windowTitle",
                                WS_POPUP | WS_VISIBLE,
                                mi.rcMonitor.left,
                                mi.rcMonitor.top,
                                wWidth,
-                               wHeigth,
+                               wHeight,
                                NULL, NULL, hInstance, 0);
     }
 
@@ -183,10 +187,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 
     tex.open("pic.png", GL_RGBA);
     tex2.open("pic2.png", GL_RGBA);
-    tex3.create(GL_RGBA, wWidth, wHeigth, GL_RGBA, NULL);
+    tex3.create(GL_RGBA, wWidth, wHeight, GL_RGBA, NULL);
     rtex.create();
-    rtex.createTexture(GL_RGBA, wWidth, wHeigth);
-    camera.setViewArea((float)wWidth / wHeigth, 1);
+    rtex.createTexture(GL_RGBA, wWidth, wHeight);
+    camera.setViewArea((float)wWidth / wHeight, 1);
 
     ShowWindow(hWindow, nCommandShow);
     UpdateWindow(hWindow);
@@ -197,6 +201,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     while (windowOpen) {
         timeDiff = getTimeDiff(prtime);
         if (timeDiff >= 1/ MAX_FPS) {
+            debug << 1 / timeDiff << '\n';
+
             setTime(prtime);
             processAsyncInput();
             yaSosuPenis(hWindow);

@@ -4,55 +4,50 @@
 #include "BASE.h"
 #include "MATH.h"
 #include "CAMERA.h"
+#include "POLYGONOBSTACLE.hpp"
 
-class __PLAYER {
+class __PLAYER : public Transform {
 private:
-	vec2f _pos{};
-	FLOAT _viewAngle{};
+	ConvexPolygonObstacle* obstacle;
 
+	void initTrarr() {
+		const FLOAT radius = 0.03f;
+		vec2f cur = { radius, 0 };
+		const int N = 4;
+		const FLOAT rot = 2 * PI / N;
+		Polygonf polygon;
+		for (int n = 0; n < N; ++n, cur = rotatem(rot) * cur) {
+			polygon.push_back(cur);
+		}
+		obstacle = new ConvexPolygonObstacle(polygon, GLRED);
+	}
+	
 public:
 	FLOAT movementSpeed = 1;
 	FLOAT rotationSpeed = 1;
 
 	__PLAYER(const vec2f& pos, const FLOAT& viewAngle) 
-		: _viewAngle(viewAngle), _pos(pos) { }
-
-	__PLAYER() = default;
-
-	vec2f pos() const {
-		return _pos;
+		: Transform(pos, viewAngle, vec2f(1, 1)) 
+	{
+		initTrarr();
 	}
 
-	void changePos(vec2f newPos) {
-		_pos = newPos;
-	}
-
-	void move(vec2f offset) {
-		_pos += offset;
-	}
-
-	void move(FLOAT dist) {
-		_pos += getDir() * dist;
-	}
-	
-	FLOAT viewAngle() const {
-		return _viewAngle;
-	}
-
-	void rotate(FLOAT angle) {
-		_viewAngle += angle;
-	}
-
-	void setAngle(FLOAT newAngle) {
-		_viewAngle = newAngle;
-	}
-
-	vec2f getDir() const {
-		return vec2f(cos(_viewAngle), sin(_viewAngle));
+	__PLAYER() {
+		initTrarr();
 	}
 
 	Camera getCam() const {
 		// TODO: add realisation
+		throw emptyRealisation;
+	}
+
+	void draw(const Camera& camera) {
+		copyTransform(obstacle, this);
+		obstacle->draw(camera);
+	}
+
+	~__PLAYER() {
+		delete obstacle;
 	}
 };
 

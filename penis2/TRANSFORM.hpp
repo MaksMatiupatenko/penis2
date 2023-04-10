@@ -10,6 +10,10 @@ private:
 	vec2f tsize = vec2f(1, 1);
 
 public:
+	Transform() = default;
+	Transform(vec2f tpos, FLOAT tangle, vec2f tsize)
+		: tpos(tpos), tangle(tangle), tsize(tsize) { }
+
 	mat3f getMat() const {
 		return translatem(tpos) * rotatem(tangle) * scalem(tsize);
 	}
@@ -62,5 +66,11 @@ public:
 		tsize = tsize * scale;
 	}
 };
+
+void copyTransform(Transform* to, Transform* from) {
+	to->setPos(from->getPos());
+	to->setAngle(from->getAngle());
+	to->setScale(from->getScale());
+}
 
 #endif
