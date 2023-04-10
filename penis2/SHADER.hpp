@@ -156,10 +156,26 @@ public:
         GL_SHADERS_ORDER_HANDLER.setActive(id);
     }
 
+    /// <summary>
+    /// я тут ебнул эррор хендлинг типа. если верхушка стека это не мы, 
+    /// то ниче не происходит так что можно по поводу сейвовости этой хуеты не париться.
+    /// но если хочется для дебага сделать ее ансейвовой, то туда передаешь true
+    /// </summary>
+    void setInactive(BOOL unsafeVersion = FALSE) {
+        GL_SHADERS_ORDER_HANDLER.setBack(id, unsafeVersion);
+    }
+
+
     void setUniform(std::string name, FLOAT value) {
         setActiveShader();
         UINT loc = glGetUniformLocation(id, name.c_str());
         glUniform1f(loc, value);
+        setInactive();
+    }
+    void setUniform(std::string name, int value) {
+        setActiveShader();
+        UINT loc = glGetUniformLocation(id, name.c_str());
+        glUniform1i(loc, value);
         setInactive();
     }
     void setUniform(std::string name, CONST GLTXTR& tex) {
@@ -181,15 +197,6 @@ public:
         glUniformMatrix3fv(loc, 1, GL_FALSE, mt);
         setInactive();
         delete[] mt;
-    }
-
-    /// <summary>
-    /// я тут ебнул эррор хендлинг типа. если верхушка стека это не мы, 
-    /// то ниче не происходит так что можно по поводу сейвовости этой хуеты не париться.
-    /// но если хочется для дебага сделать ее ансейвовой, то туда передаешь true
-    /// </summary>
-    void setInactive(BOOL unsafeVersion = FALSE) {
-        GL_SHADERS_ORDER_HANDLER.setBack(id, unsafeVersion);
     }
 };
 

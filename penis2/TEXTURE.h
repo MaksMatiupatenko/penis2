@@ -6,20 +6,13 @@
 #include "RENDERTEXTURE.hpp"
 #include "GLLOADER.hpp"
 
-SPRG textureApplier;
-SPRG colorApplier;
+SPRG shader;
+SPRG basicDraw;
 
 void initShaders() {
-	colorApplier.loadFromFile("colorApplier.vert", "", "", "", "colorApplier.frag");
-	textureApplier.loadFromFile("shader.vert", "", "", "", "shader.frag");
+	basicDraw.loadFromFile("basicDrawShader.vert", "", "", "", "basicDrawShader.frag");
+	shader.loadFromFile("shader.vert", "", "", "", "shader.frag");
 }
-
-struct _GL_INITIALIZER {
-	_GL_INITIALIZER() {
-		initOpenGl();
-		initShaders();
-	}
-} GL_INITIALIZER;
 
 
 #endif // !__TEXTUREH__

@@ -40,7 +40,7 @@ static const PIXELFORMATDESCRIPTOR pfd =
 
 static const int context_attributes[] = {
     WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-    WGL_CONTEXT_MINOR_VERSION_ARB, 0,
+    WGL_CONTEXT_MINOR_VERSION_ARB, 3,
     WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
     0
 };
@@ -178,6 +178,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 
 
     context = createContext(hWindow);
+    initOpenGl();
+    initShaders();
 
     tex.open("pic.png", GL_RGBA);
     tex2.open("pic2.png", GL_RGBA);
@@ -219,7 +221,7 @@ void yaSosuPenis(HWND hWindow) {
     {1, 0},
     {0, 1},
     {-1, 0},
-    }, & tex);
+    }, &tex2, GLWHITE);
     obstacle.draw(camera);
 
     auto hdc = GetDC(hWindow);

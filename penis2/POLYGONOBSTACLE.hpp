@@ -45,12 +45,12 @@ private:
 
 public:
 
-	ConvexPolygonObstacle(const Polygonf& hitbox, COLOR color = GLBLACK) : hitbox(hitbox), color(color) { }
+	ConvexPolygonObstacle(const Polygonf& hitbox, COLOR color = GLWHITE) : hitbox(hitbox), color(color) { }
 
 	/// <summary>
 	/// Constructor takes a convex polygon #hitbox, a texture #texture and a colorFilter, which is a color texture will be multiplicated
 	/// </summary>
-	ConvexPolygonObstacle(const Polygonf& hitbox, GLTXTR* texture, COLOR colorFilter = GLBLACK) : 
+	ConvexPolygonObstacle(const Polygonf& hitbox, GLTXTR* texture, COLOR colorFilter = GLWHITE) : 
 		hitbox(hitbox), texture(texture), color(colorFilter) { }
 
 	void setTexture(GLTXTR* newTexture) {
@@ -67,20 +67,20 @@ public:
 		if (!arrset) {
 			setTrArr();
 		}
-		if (texture) {
-			textureApplier.setUniform("tex", *texture);
-			textureApplier.setActiveShader();
-			trarr.draw(textureApplier, Transform::getMat(), camera);
-			textureApplier.setInactive();
+		if (texture != nullptr) {
+			basicDraw.setUniform("tex", *texture);
+			basicDraw.setUniform("hasTexture", 1);
+			basicDraw.setActiveShader();
+			trarr.draw(basicDraw, Transform::getMat(), camera);
+			basicDraw.setInactive();
 		}
 		else {
-			// ¬Œ“ ›“Œ“ ›À« œ–Œƒ≈À¿… » œŒÃ≈Õﬂ… TEXTUREAPPLIER
-			// COLORAPPLIER ﬂ ¬ »Õ»“ÿ≈…ƒ≈– ”∆≈ œ–Œ »Õ”À
-			//colorApplier.setUniform("color", color);
-			colorApplier.setActiveShader();
-
+			basicDraw.setUniform("hasTexture", 0);
+			basicDraw.setActiveShader();
+			trarr.draw(basicDraw, Transform::getMat(), camera);
+			basicDraw.setInactive();
 		}
 	}
 };
 
-#endif // !__POLYGONOBSTACLEHPP__
+#endif
