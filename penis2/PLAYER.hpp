@@ -4,11 +4,11 @@
 #include "BASE.h"
 #include "MATH.h"
 #include "CAMERA.h"
-#include "POLYGONOBSTACLE.hpp"
+#include "POLYGONDRAWABLE.hpp"
 
 class __PLAYER : public Transform {
 private:
-	ConvexPolygonObstacle* obstacle;
+	PolygonDrawable* obstacle;
 
 	void initTrarr() {
 		const FLOAT radius = 0.03f;
@@ -19,7 +19,7 @@ private:
 		for (int n = 0; n < N; ++n, cur = rotatem(rot) * cur) {
 			polygon.push_back(cur);
 		}
-		obstacle = new ConvexPolygonObstacle(polygon, GLRED);
+		obstacle = new PolygonDrawable(polygon, GLRED);
 	}
 	
 public:

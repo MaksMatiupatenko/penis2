@@ -71,6 +71,8 @@ public:
         const vec_t& point,
         const POLYGON& polygon) {
 
+        throw emptyRealisation;
+
         UINT lg = 0;
         while ((1 << lg) < polygon.size()) {
             ++lg;

@@ -1,5 +1,5 @@
-#ifndef __POLYGONOBSTACLEHPP__
-#define __POLYGONOBSTACLEHPP__
+#ifndef __POLYGONDRAWABLEHPP__
+#define __POLYGONDRAWABLEHPP__
 
 #include "MATH.h"
 #include "TRANSFORM.hpp"
@@ -9,7 +9,7 @@
 #include "CAMERA.h"
 #include "TRIANGLEARRAY.hpp"
 
-class ConvexPolygonObstacle : public Transform {
+class PolygonDrawable : public Transform {
 private:
 	Polygonf hitbox;
 	COLOR color;
@@ -45,12 +45,12 @@ private:
 
 public:
 
-	ConvexPolygonObstacle(const Polygonf& hitbox, COLOR color = GLWHITE) : hitbox(hitbox), color(color) { }
+	PolygonDrawable(const Polygonf& hitbox, COLOR color = GLWHITE) : hitbox(hitbox), color(color) { }
 
 	/// <summary>
 	/// Constructor takes a convex polygon #hitbox, a texture #texture and a colorFilter, which is a color texture will be multiplicated
 	/// </summary>
-	ConvexPolygonObstacle(const Polygonf& hitbox, GLTXTR* texture, COLOR colorFilter = GLWHITE) : 
+	PolygonDrawable(const Polygonf& hitbox, GLTXTR* texture, COLOR colorFilter = GLWHITE) : 
 		hitbox(hitbox), texture(texture), color(colorFilter) { }
 
 	void setTexture(GLTXTR* newTexture) {
@@ -61,6 +61,10 @@ public:
 	void setColor(COLOR newColor) {
 		arrset = FALSE;
 		color = newColor;
+	}
+
+	const Polygonf& box() const {
+		return hitbox;
 	}
 
 	VOID draw(const Camera& camera) {

@@ -84,7 +84,7 @@
     <ClInclude Include="TRANSFORM.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="POLYGONOBSTACLE.hpp">
+    <ClInclude Include="POLYGONDRAWABLE.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="COLOR.h">

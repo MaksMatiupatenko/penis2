@@ -10,7 +10,7 @@
 #include "TEXTURE.h"
 #include "TIME.hpp"
 #include "PLAYER.h"
-#include "POLYGONOBSTACLE.hpp"
+#include "POLYGONDRAWABLE.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -77,6 +77,8 @@ void destructContext(HWND hWindow, HGLRC gl) {
     wglDeleteContext(gl);
 }
 
+std::vector <PolygonDrawable> drawables;
+
 PLAYER player;
 
 HGLRC context;
@@ -95,6 +97,9 @@ TIME_T prtime;
 float timeDiff;
 
 void yaSosuPenis(HWND hwindow);
+
+void updateFrame();
+
 void processAsyncInput() {
     if (GetAsyncKeyState('W')) {
         camera.move(0, timeDiff);
@@ -120,12 +125,31 @@ void processAsyncInput() {
     if (GetAsyncKeyState('X')) {
         camera.scale(exp(-timeDiff));
     }
+    if (GetAsyncKeyState(VK_UP)) {
+        player.move(0, timeDiff);
+    }
+    if (GetAsyncKeyState(VK_DOWN)) {
+        player.move(0, -timeDiff);
+    }
+    if (GetAsyncKeyState(VK_LEFT)) {
+        player.move(-timeDiff, 0);
+    }
+    if (GetAsyncKeyState(VK_RIGHT)) {
+        player.move(timeDiff, 0);
+    }
 }
 
 void updateConditions();
 
 bool windowOpen = true;
 float MAX_FPS = 60;
+
+void boundVector(vec2f& vec) {
+    vec.x = min(vec.x, 1);
+    vec.y = min(vec.y, 1);
+    vec.x = max(vec.x, -1);
+    vec.y = max(vec.y, -1);
+}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandLine, int nCommandShow) {
     /*                      */
@@ -185,6 +209,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     initOpenGl();
     initShaders();
 
+    glClearColor(1, 1, 1, 1);
+
     tex.open("pic.png", GL_RGBA);
     tex2.open("pic2.png", GL_RGBA);
     tex3.create(GL_RGBA, wWidth, wHeight, GL_RGBA, NULL);
@@ -201,15 +227,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     while (windowOpen) {
         timeDiff = getTimeDiff(prtime);
         if (timeDiff >= 1/ MAX_FPS) {
-            debug << 1 / timeDiff << '\n';
-
             setTime(prtime);
             processAsyncInput();
+            updateFrame();
             yaSosuPenis(hWindow);
             GL_SHADERS_ORDER_HANDLER.clear();
         }
         
-
         while (PeekMessage(&msg, hWindow, 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
@@ -218,15 +242,41 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     return msg.wParam;
 }
 
+void updateFrame() {
+    PolygonDrawable obstacle({
+        {0.1, 0.1},
+        {0.3, 0.1},
+        {0, 0.5}
+    }, GLWHITE);
+    drawables.clear();
+
+    for (size_t i = 0; i < obstacle.box().size(); ++i) {
+        Polygonf hitbox;
+
+        vec2f dir1(player.getPos(), obstacle.box().get(i));
+        hitbox.push_back(obstacle.box().get(i));
+        vec2f t1 = obstacle.box().get(i) + dir1 * 1e9f;
+        hitbox.push_back(t1);
+
+        vec2f dir2(player.getPos(), obstacle.box().get(i + 1));
+        vec2f t2 = obstacle.box().get(i + 1) + dir2 * 1e9f;
+        hitbox.push_back(t2);
+        hitbox.push_back(obstacle.box().get(i + 1));
+
+        drawables.push_back(PolygonDrawable(hitbox, GLBLACK));
+        
+    }
+    drawables.push_back(obstacle);
+}
+
 void yaSosuPenis(HWND hWindow) {
     glClear(GL_COLOR_BUFFER_BIT);
-    ConvexPolygonObstacle obstacle({ {-1, -1},
-    {1, -1},
-    {sinf(getCurTime()), 0},
-    {0, 1},
-    {-1, 0},
-    }, &tex2, GLWHITE);
-    obstacle.draw(camera);
+
+    for (auto ptr : drawables) {
+        ptr.draw(camera);
+    }
+
+    player.draw(camera);
 
     auto hdc = GetDC(hWindow);
     SwapBuffers(hdc);
@@ -249,7 +299,6 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         if (wParam == VK_ESCAPE) {
             SendMessage(hWindow, WM_CLOSE, 0, 0);
         }
-
         return 0;
     }
 

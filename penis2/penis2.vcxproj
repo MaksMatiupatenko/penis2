@@ -155,7 +155,7 @@
     <ClInclude Include="penis2.h" />
     <ClInclude Include="PLAYER.hpp" />
     <ClInclude Include="POLYGON.hpp" />
-    <ClInclude Include="POLYGONOBSTACLE.hpp" />
+    <ClInclude Include="POLYGONDRAWABLE.hpp" />
     <ClInclude Include="RENDERTEXTURE.hpp" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SHADER.hpp" />
