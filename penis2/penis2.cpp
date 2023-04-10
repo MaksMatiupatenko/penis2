@@ -212,7 +212,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     MSG msg;
     while (windowOpen) {
         timeDiff = getTimeDiff(prtime);
-        if (timeDiff >= 1 / MAX_FPS) {
+        if (timeDiff >= 1/ MAX_FPS) {
             debug << 1 / timeDiff << '\n';
 
             setTime(prtime);
@@ -237,35 +237,15 @@ void yaSosuPenis(HWND hWindow) {
     trarr.push(vec2f(-0.9, -0.9), GLBLACK, vec2f(1, 0));
     trarr.create();
 
-    TRARR trarr2;
-    trarr2.push(vec2f(-1, -1), GLBLACK, vec2f(0, 1));
-    trarr2.push(vec2f(1, -1), vec3f(0, 0, 0), vec2f(1, 1));
-    trarr2.push(vec2f(1, 1), vec3f(0, 0, 0), vec2f(1, 0));
-    trarr2.push(vec2f(-1, -1), vec3f(0, 0, 0), vec2f(0, 1));
-    trarr2.push(vec2f(-1, 1), vec3f(0, 0, 0), vec2f(0, 0));
-    trarr2.push(vec2f(1, 1), vec3f(0, 0, 0), vec2f(1, 0));
-    trarr2.create();
-
-    //debug << camera.getPos().x << ' ' << camera.getPos().y << '\n';
-    //debug << camera.getPos().x << ' ' << camera.getPos().y << '\n';
-
-    rtex.bind();
     glClear(GL_COLOR_BUFFER_BIT);
-    textureApplier.setUniform("tex", tex);
-    textureApplier.setActiveShader();
-    //trarr.draw(textureApplier, rotatem(getCurTime()), camera);
-    //trarr.draw(sprg, mat3f());
-    rtex.unbind();
-    textureApplier.setInactive();
-
-    glClear(GL_COLOR_BUFFER_BIT);
-    //textureApplier.setUniform("tex", rtex.getTexture());
     textureApplier.setUniform("tex", tex);
     textureApplier.setActiveShader();
     trarr.draw(textureApplier, mat3f(), camera);
     textureApplier.setInactive();
 
-    SwapBuffers(GetDC(hWindow));
+    auto hdc = GetDC(hWindow);
+    SwapBuffers(hdc);
+    ReleaseDC(hWindow, hdc);
 }
 
 
