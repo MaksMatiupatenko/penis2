@@ -1,8 +1,7 @@
 #ifndef __POLYGONHPP__
 #define __POLYGONHPP__
 
-#include "BASE.h"
-#include "MATH.h"
+#include "TRIANGLE.hpp"
 #include <vector>
 
 template <typename FLOATTYPE>
@@ -25,17 +24,33 @@ private:
 	using VREF = VREFERENCE;
 	using CVREF = VCONSTREFERENCE;
 
+    using POLYGON = __POLYGON<TYPE>;
+
 public:
 
 	using BASE::BASE;
 
-	VREF operator[](int i) {
-		return BASE::data[i % BASE::size()];
-	}
+    CVREF get(int pos) const {
+        return BASE::operator[](pos% BASE::size());
+    }
 
-	CVREF operator[](int i) const {
-		return BASE::data[i % BASE::size()];
-	}
+    VREF get(int pos) {
+        return BASE::operator[](pos % BASE::size());
+    }
+
+    static bool isConvex(POLYGON polygon) {
+        unsigned char flag = 0;
+        for (size_t i = 0; i < polygon.size(); ++i) {
+            TYPE cross = crss(VEC(polygon.get(i), polygon.get(i + 1)), VEC(polygon.get(i + 1), polygon.get(i + 2)));
+            if (cross < 0) {
+                flag |= 1;
+            }
+            else if (cross > 0) {
+                flag |= 2;
+            }
+        }
+        return flag != 3;
+    }
 };
 
 template <typename FLOATTYPE>
@@ -93,8 +108,33 @@ public:
     }
 };
 
-struct Triangle {
-    vec4f a{}, b{}, c{};
+template <typename FLOATTYPE>
+class PolygonTriangulator {
+private:
+    using TYPE = FLOATTYPE;
+    using vec_t = vec2<TYPE>;
+    using POLYGON = __POLYGON<TYPE>;
+
+    static std::vector <Triangle> nonConvexTriangulation(const POLYGON& polygon) {
+        throw emptyRealisation;
+    }
+
+    static std::vector <Triangle> convexTriangulation(const POLYGON& polygon) {
+        std::vector <Triangle> result;
+        for (size_t i = 2; i < polygon.size(); ++i) {
+            result.emplace_back(polygon[0], polygon[i - 1], polygon[i]);
+        }
+        return result;
+    }
+
+public:
+    static std::vector <Triangle> get(const POLYGON& polygon) {
+        if (POLYGON::isConvex(polygon)) {
+            return convexTriangulation(polygon);
+        } 
+        return nonConvexTriangulation(polygon);
+    }
 };
+
 
 #endif

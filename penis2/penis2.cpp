@@ -10,6 +10,7 @@
 #include "TEXTURE.h"
 #include "TIME.hpp"
 #include "PLAYER.h"
+#include "POLYGONOBSTACLE.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -117,22 +118,6 @@ void processAsyncInput() {
     if (GetAsyncKeyState('X')) {
         camera.scale(exp(-timeDiff));
     }
-     /*if (wParam == 'W') {
-         player.move(timeDiff * player.movementSpeed);
-         camera.move(0, timeDiff * 100);
-        }
-     else if (wParam == 'S') {
-     player.move(-timeDiff * player.movementSpeed);
-     camera.move(0, -timeDiff * 100);
-        }
-     else if (wParam == 'A') {
-     player.rotate(timeDiff * player.rotationSpeed);
-     camera.move(-timeDiff * 100, 0);
-        }
-     else if (wParam == 'D') {
-     player.rotate(-timeDiff * player.rotationSpeed);
-     camera.move(timeDiff * 100, 0);
-        }*/
 }
 
 bool windowOpen = true;
@@ -194,9 +179,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 
     context = createContext(hWindow);
 
-    initOpenGl();
-    initShaders();
-
     tex.open("pic.png", GL_RGBA);
     tex2.open("pic2.png", GL_RGBA);
     tex3.create(GL_RGBA, wWidth, wHeigth, GL_RGBA, NULL);
@@ -231,17 +213,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 }
 
 void yaSosuPenis(HWND hWindow) {
-    TRARR trarr;
-    trarr.push(vec2f(0, 0.9), GLBLACK, vec2f(0, 0));
-    trarr.push(vec2f(0.9, -0.9), GLBLACK, vec2f(0, 1));
-    trarr.push(vec2f(-0.9, -0.9), GLBLACK, vec2f(1, 0));
-    trarr.create();
-
     glClear(GL_COLOR_BUFFER_BIT);
-    textureApplier.setUniform("tex", tex);
-    textureApplier.setActiveShader();
-    trarr.draw(textureApplier, mat3f(), camera);
-    textureApplier.setInactive();
+    ConvexPolygonObstacle obstacle({ {-1, -1},
+    {1, -1},
+    {1, 0},
+    {0, 1},
+    {-1, 0},
+    }, & tex);
+    obstacle.draw(camera);
 
     auto hdc = GetDC(hWindow);
     SwapBuffers(hdc);
@@ -264,6 +243,7 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         if (wParam == VK_ESCAPE) {
             SendMessage(hWindow, WM_CLOSE, 0, 0);
         }
+
         return 0;
     }
 

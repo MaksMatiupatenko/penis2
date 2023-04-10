@@ -165,6 +165,7 @@
     <ClInclude Include="TEXTURE.hpp" />
     <ClInclude Include="TIME.hpp" />
     <ClInclude Include="TRANSFORM.hpp" />
+    <ClInclude Include="TRIANGLE.hpp" />
     <ClInclude Include="TRIANGLEARRAY.hpp" />
     <ClInclude Include="VEC2.hpp" />
     <ClInclude Include="VEC3.hpp" />

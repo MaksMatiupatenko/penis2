@@ -5,6 +5,7 @@
 
 std::ofstream debug("debug.txt");
 std::ofstream errLog("runtimeLog.txt");
+std::exception emptyRealisation("Suka resalisuy snachala potom usay dolbaeb\n");
 
 #define CONST const
 #define VOID void

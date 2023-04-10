@@ -34,6 +34,14 @@ public:
 	DVEC(CONST __VEC3<TYPE>& vec): x(vec.x), y(vec.y), z(vec.z) {}
 	DVEC(CONST __VEC2<TYPE>& vec): x(vec.x), y(vec.y) {}
 
+	REF operator=(CREF other) {
+		x = other.x;
+		y = other.y;
+		z = other.z;
+		w = other.w;
+		return *this;
+	}
+
 	VEC operator-() CONST {
 		return { -x, -y, -z, -w };
 	}
