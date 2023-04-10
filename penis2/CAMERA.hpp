@@ -5,7 +5,7 @@
 
 class Camera: public Transform {
 private:
-	vec2f viewArea;
+	vec2f viewArea = { 1, 1 };
 
 public:
 	mat3f getMat() const {
