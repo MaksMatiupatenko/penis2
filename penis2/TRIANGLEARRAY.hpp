@@ -67,14 +67,7 @@ public:
 		sprg.setUniform("model", model);
 		sprg.setUniform("view", camera.getMat());
 		sprg.setActiveShader();
-		/*mat3f mt = camera.getMat();
-		for (int i = 0; i < 3; ++i) {
-			for (int j = 0; j < 3; ++j) {
-				debug << mt[i][j] << ' ';
-			}
-			debug << '\n';
-		}
-		debug << '\n';*/
+
 		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, data.size() / ATTRIBSINVERTEX);
 		glBindVertexArray(NULL);

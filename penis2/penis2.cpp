@@ -40,7 +40,7 @@ static const PIXELFORMATDESCRIPTOR pfd =
 
 static const int context_attributes[] = {
     WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-    WGL_CONTEXT_MINOR_VERSION_ARB, 3,
+    WGL_CONTEXT_MINOR_VERSION_ARB, 0,
     WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
     0
 };
@@ -197,8 +197,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     while (windowOpen) {
         timeDiff = getTimeDiff(prtime);
         if (timeDiff >= 1/ MAX_FPS) {
-            debug << 1 / timeDiff << '\n';
-
             setTime(prtime);
             processAsyncInput();
             yaSosuPenis(hWindow);
@@ -218,7 +216,7 @@ void yaSosuPenis(HWND hWindow) {
     glClear(GL_COLOR_BUFFER_BIT);
     ConvexPolygonObstacle obstacle({ {-1, -1},
     {1, -1},
-    {1, 0},
+    {sinf(getCurTime()), 0},
     {0, 1},
     {-1, 0},
     }, &tex2, GLWHITE);

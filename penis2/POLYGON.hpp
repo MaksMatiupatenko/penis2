@@ -31,11 +31,11 @@ public:
 	using BASE::BASE;
 
     CVREF get(int pos) const {
-        return BASE::operator[](pos% BASE::size());
+        return BASE::operator[]((pos % (int)BASE::size() + (int)BASE::size()) % (int)BASE::size());
     }
 
     VREF get(int pos) {
-        return BASE::operator[](pos % BASE::size());
+        return BASE::operator[]((pos % (int)BASE::size() + (int)BASE::size()) % (int)BASE::size());
     }
 
     static bool isConvex(POLYGON polygon) {
@@ -116,7 +116,33 @@ private:
     using POLYGON = __POLYGON<TYPE>;
 
     static std::vector <Triangle> nonConvexTriangulation(const POLYGON& polygon) {
-        throw emptyRealisation;
+        auto p = polygon;
+        std::vector <Triangle> ans;
+
+        int i = 0;
+        while (p.size() > 2) {
+            if (crss(p.get(i) - p.get(i - 1), p.get(i + 1) - p.get(i - 1)) >= 0) {
+                bool flag = true;
+                for (int j = 0; j < p.size() - 3; ++j) {
+                    if (
+                        crss(p.get(i) - p.get(i - 1), p.get(i + 2 + j) - p.get(i - 1)) >= 0 &&
+                        crss(p.get(i + 1) - p.get(i), p.get(i + 2 + j) - p.get(i)) >= 0 &&
+                        crss(p.get(i - 1) - p.get(i + 1), p.get(i + 2 + j) - p.get(i + 1)) >= 0) {
+
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) {
+                    ans.push_back({ p.get(i - 1), p.get(i), p.get(i + 1) });
+                    p.erase(p.begin() + i % p.size());
+                    --i;
+                }
+            }
+            ++i;
+        }
+
+        return ans;
     }
 
     static std::vector <Triangle> convexTriangulation(const POLYGON& polygon) {
