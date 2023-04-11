@@ -261,6 +261,33 @@ void updateFrame() {
         {0.8, -0.1},
         {0.5, -0.1}
         }, GLLIGHTGREY);
+    const FLOAT MAXABS = wWidth / wHeight;
+    const FLOAT WIDTH = 0.03f;
+    obstacles.emplace_back(Polygonf{
+        {-MAXABS, -1},
+        {MAXABS, -1},
+        {MAXABS, -1 + WIDTH},
+        {-MAXABS, -1 + WIDTH}
+        }, GLLIGHTGREY);
+    obstacles.emplace_back(Polygonf{
+        {-MAXABS, 1},
+        {-MAXABS, 1 - WIDTH},
+        {MAXABS, 1 - WIDTH},
+        {MAXABS, 1}
+        }, GLLIGHTGREY);
+    obstacles.emplace_back(Polygonf{
+        {-MAXABS, -1},
+        {-MAXABS + WIDTH, -1},
+        {-MAXABS + WIDTH, 1},
+        {-MAXABS, 1}
+        }, GLLIGHTGREY);
+    obstacles.emplace_back(Polygonf{
+        {MAXABS - WIDTH, -1},
+        {MAXABS, -1},
+        {MAXABS, 1},
+        {MAXABS - WIDTH, 1}
+        }, GLLIGHTGREY);
+
 
     drawables.clear();
 
