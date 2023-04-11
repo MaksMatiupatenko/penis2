@@ -50,6 +50,9 @@
 #define GL_CLAMP_TO_EDGE 0x812F
 #define GL_TEXTURE_WRAP_S 0x2802
 #define GL_TEXTURE_WRAP_T 0x2803
+#define GL_BLEND 0x0BE2
+#define GL_SRC_ALPHA 0x0302
+#define GL_ONE_MINUS_SRC_ALPHA 0x0303
 
 typedef unsigned int GLuint;
 typedef int GLsizei;
@@ -236,6 +239,14 @@ typedef void(*GLTEXPARAMETERI)(GLenum target, GLenum pname, GLint param);
 GLTEXPARAMETERI _glTexParameteri;
 #define glTexParameteri _glTexParameteri
 
+typedef void(*GLENABLE)(GLenum cap);
+GLENABLE _glEnable;
+#define glEnable _glEnable
+
+typedef void(*GLBLENDFUNC)(GLenum sfactor, GLenum dfactor);
+GLBLENDFUNC _glBlendFunc;
+#define glBlendFunc _glBlendFunc
+
 
 
 void* getAddress(const char* name) {
@@ -251,6 +262,8 @@ void* getAddress(const char* name) {
 }
 
 void initOpenGl() {
+	_glBlendFunc = (GLBLENDFUNC)getAddress("glBlendFunc");
+	_glEnable = (GLENABLE)getAddress("glEnable");
 	_glGenFramebuffers = (GLGENFRAMEBUFFERS)getAddress("glGenFramebuffers");
 	_glDeleteFramebuffers = (GLDELETEFRAMEBUFFERS)getAddress("glDeleteFramebuffers");
 	_glBindFramebuffer = (GLBINDFRAMEBUFFER)getAddress("glBindFramebuffer");

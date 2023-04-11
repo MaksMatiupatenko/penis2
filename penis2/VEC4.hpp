@@ -124,6 +124,10 @@ public:
 		return sqrt(dstpw2(vec1, vec2));
 	}
 
+	friend VEC normalize(CREF vec) {
+		return vec / len(vec);
+	}
+
 	template <class type>
 	operator DVEC<type>() CONST {
 		return { x, y, z, w };

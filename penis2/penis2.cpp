@@ -10,6 +10,7 @@
 #include "TEXTURE.h"
 #include "TIME.hpp"
 #include "PLAYER.h"
+#include "SHADOWDRAWER.hpp"
 #include "POLYGONDRAWABLE.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -88,6 +89,7 @@ GLTXTR tex2;
 GLTXTR tex3;
 GLRTXTR rtex;
 Camera camera;
+ShadowDrawer shadowDrawer;
 
 vec2f mousePos;
 
@@ -209,7 +211,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     initOpenGl();
     initShaders();
 
-    glClearColor(1, 1, 1, 1);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     tex.open("pic.png", GL_RGBA);
     tex2.open("pic2.png", GL_RGBA);
@@ -217,6 +220,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     rtex.create();
     rtex.createTexture(GL_RGBA, wWidth, wHeight);
     camera.setViewArea((float)wWidth / wHeight, 1);
+    shadowDrawer.create(wWidth, wHeight);
+    shadowDrawer.setShadowColor(vec4f(0, 0, 0, 0.5));
 
     ShowWindow(hWindow, nCommandShow);
     UpdateWindow(hWindow);
@@ -290,33 +295,26 @@ void updateFrame() {
 
 
     drawables.clear();
-
-    for (size_t i = 0; i < obstacles.size(); ++i) {
-        auto obstacle = obstacles[i];
-        for (size_t i = 0; i < obstacle.box().size(); ++i) {
-            Polygonf hitbox;
-
-            vec2f dir1(player.getPos(), obstacle.box().get(i));
-            hitbox.push_back(obstacle.box().get(i));
-            vec2f t1 = obstacle.box().get(i) + dir1 * 1e9f;
-            hitbox.push_back(t1);
-
-            vec2f dir2(player.getPos(), obstacle.box().get(i + 1));
-            vec2f t2 = obstacle.box().get(i + 1) + dir2 * 1e9f;
-            hitbox.push_back(t2);
-            hitbox.push_back(obstacle.box().get(i + 1));
-
-            drawables.push_back(PolygonDrawable(hitbox, GLGREY));
-        }
-    }
     for (auto obstacle : obstacles) {
         drawables.push_back(obstacle);
+    }
+
+    shadowDrawer.clear();
+    for (const auto& obs : obstacles) {
+        shadowDrawer.push(player.getPos(), obs);
     }
 }
 
 void yaSosuPenis(HWND hWindow) {
+    glClearColor(1, 1, 1, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    PolygonDrawable(Polygonf{
+        {-0.5, 0.1},
+        {-0.4, 0.0},
+        {-0.5, 0.0}
+                    }, GLBLUE).draw(camera);
+    shadowDrawer.draw(camera);
     for (auto ptr : drawables) {
         ptr.draw(camera);
     }
@@ -337,6 +335,7 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         rtex.destruct();
         tex2.destruct();
         tex3.destruct();
+        shadowDrawer.destruct();
         windowOpen = false;
         return 0;
     }

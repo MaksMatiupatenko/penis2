@@ -19,7 +19,7 @@ class TRARR {
 private:
 	DYNARR <FLOAT> data;
 
-	UINT vao, vbo;
+	UINT vao = 0, vbo = 0;
 
 #define ATTRIBSINVERTEX 12
 
@@ -46,6 +46,11 @@ public:
 	}
 
 	VOID create() {
+		if (vao != 0) {
+			glDeleteVertexArrays(1, &vao);
+			glDeleteBuffers(1, &vbo);
+		}
+
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
 
