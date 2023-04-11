@@ -243,30 +243,48 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 }
 
 void updateFrame() {
-    PolygonDrawable obstacle({
+    std::vector <PolygonDrawable> obstacles;
+    obstacles.emplace_back(Polygonf{
         {0.1, 0.1},
         {0.3, 0.1},
         {0, 0.5}
-    }, GLWHITE);
+    }, GLLIGHTGREY);
+    obstacles.emplace_back(Polygonf{
+        {-0.1, -0.1},
+        {-0.3, -0.1},
+        {0, -0.5}
+        }, GLLIGHTGREY);
+    obstacles.emplace_back(Polygonf{
+        {0.5, -0.3},
+        {0.8, -0.3},
+        {0.7, -0.2},
+        {0.8, -0.1},
+        {0.5, -0.1}
+        }, GLLIGHTGREY);
+
     drawables.clear();
 
-    for (size_t i = 0; i < obstacle.box().size(); ++i) {
-        Polygonf hitbox;
+    for (size_t i = 0; i < obstacles.size(); ++i) {
+        auto obstacle = obstacles[i];
+        for (size_t i = 0; i < obstacle.box().size(); ++i) {
+            Polygonf hitbox;
 
-        vec2f dir1(player.getPos(), obstacle.box().get(i));
-        hitbox.push_back(obstacle.box().get(i));
-        vec2f t1 = obstacle.box().get(i) + dir1 * 1e9f;
-        hitbox.push_back(t1);
+            vec2f dir1(player.getPos(), obstacle.box().get(i));
+            hitbox.push_back(obstacle.box().get(i));
+            vec2f t1 = obstacle.box().get(i) + dir1 * 1e9f;
+            hitbox.push_back(t1);
 
-        vec2f dir2(player.getPos(), obstacle.box().get(i + 1));
-        vec2f t2 = obstacle.box().get(i + 1) + dir2 * 1e9f;
-        hitbox.push_back(t2);
-        hitbox.push_back(obstacle.box().get(i + 1));
+            vec2f dir2(player.getPos(), obstacle.box().get(i + 1));
+            vec2f t2 = obstacle.box().get(i + 1) + dir2 * 1e9f;
+            hitbox.push_back(t2);
+            hitbox.push_back(obstacle.box().get(i + 1));
 
-        drawables.push_back(PolygonDrawable(hitbox, GLBLACK));
-        
+            drawables.push_back(PolygonDrawable(hitbox, GLGREY));
+        }
     }
-    drawables.push_back(obstacle);
+    for (auto obstacle : obstacles) {
+        drawables.push_back(obstacle);
+    }
 }
 
 void yaSosuPenis(HWND hWindow) {

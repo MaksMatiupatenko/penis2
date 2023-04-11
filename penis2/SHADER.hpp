@@ -165,7 +165,6 @@ public:
         GL_SHADERS_ORDER_HANDLER.setBack(id, unsafeVersion);
     }
 
-
     void setUniform(std::string name, FLOAT value) {
         setActiveShader();
         UINT loc = glGetUniformLocation(id, name.c_str());
@@ -185,7 +184,6 @@ public:
             UINT loc = glGetUniformLocation(id, name.c_str());
             glUniform1i(loc, texnum[name]);
         }
-        
         glActiveTexture(GL_TEXTURE0 + texnum[name]);
         tex.use();
         setInactive();
@@ -193,10 +191,9 @@ public:
     void setUniform(std::string name, mat3f mat) {
         setActiveShader();
         UINT loc = glGetUniformLocation(id, name.c_str());
-        float* mt = new float[9]{ mat[0][0], mat[1][0], mat[2][0], mat[0][1], mat[1][1], mat[2][1], mat[0][2], mat[1][2], mat[2][2] };
+        float mt[9] = { mat[0][0], mat[1][0], mat[2][0], mat[0][1], mat[1][1], mat[2][1], mat[0][2], mat[1][2], mat[2][2] };
         glUniformMatrix3fv(loc, 1, GL_FALSE, mt);
         setInactive();
-        delete[] mt;
     }
 };
 

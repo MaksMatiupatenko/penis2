@@ -33,10 +33,12 @@ public:
 		data.push_back(coord.y);
 		data.push_back(coord.z);
 		data.push_back(coord.w);
-		data.push_back(color.r);
-		data.push_back(color.g);
-		data.push_back(color.b);
-		data.push_back(color.a);
+
+		data.push_back(color.x);
+		data.push_back(color.y);
+		data.push_back(color.z);
+		data.push_back(color.w);
+
 		data.push_back(texcoord.x);
 		data.push_back(texcoord.y);
 		data.push_back(texcoord.z);

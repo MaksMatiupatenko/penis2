@@ -8,20 +8,20 @@
 #include "SHADER.hpp"
 #include "CAMERA.h"
 #include "TRIANGLEARRAY.hpp"
+#include <cassert>
 
 class PolygonDrawable : public Transform {
 private:
-	Polygonf hitbox;
-	COLOR color;
+	Polygonf hitbox{};
+	COLOR color = GLWHITE;
 	GLTXTR* texture = nullptr;
-	TRARR trarr;
+	TRARR trarr{};
 
 	void setTrArr() {
 		trarr.clear();
 		auto triangulation = PolygonTriangulator<FLOAT>::get(hitbox);
 		float miny = hitbox[0].y, maxy = miny;
 		float minx = hitbox[0].x, maxx = minx;
-		auto t = *hitbox.begin();
 		for (const auto& vec : hitbox) {
 			auto x = vec.x;
 			auto y = vec.y;
@@ -33,9 +33,16 @@ private:
 		float xwidth = maxx - minx;
 		float ywidth = maxy - miny;
 		for (const auto& [a, b, c] : triangulation) {
-			trarr.push(a, color, vec2f((a.x - minx) / xwidth, (a.y - miny) / ywidth));
-			trarr.push(b, color, vec2f((b.x - minx) / xwidth, (b.y - miny) / ywidth));
-			trarr.push(c, color, vec2f((c.x - minx) / xwidth, (c.y - miny) / ywidth));
+			if (texture != nullptr) {
+				trarr.push(a, color, vec2f((a.x - minx) / xwidth, (a.y - miny) / ywidth));
+				trarr.push(b, color, vec2f((b.x - minx) / xwidth, (b.y - miny) / ywidth));
+				trarr.push(c, color, vec2f((c.x - minx) / xwidth, (c.y - miny) / ywidth));
+			}
+			else {
+				trarr.push(a, color, {});
+				trarr.push(b, color, {});
+				trarr.push(c, color, {});
+			}
 		}
 		trarr.create();
 		arrset = TRUE;
@@ -74,15 +81,11 @@ public:
 		if (texture != nullptr) {
 			basicDraw.setUniform("tex", *texture);
 			basicDraw.setUniform("hasTexture", 1);
-			basicDraw.setActiveShader();
 			trarr.draw(basicDraw, Transform::getMat(), camera);
-			basicDraw.setInactive();
 		}
 		else {
 			basicDraw.setUniform("hasTexture", 0);
-			basicDraw.setActiveShader();
 			trarr.draw(basicDraw, Transform::getMat(), camera);
-			basicDraw.setInactive();
 		}
 	}
 };
