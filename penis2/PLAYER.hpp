@@ -4,11 +4,11 @@
 #include "BASE.h"
 #include "MATH.h"
 #include "CAMERA.h"
-#include "POLYGONDRAWABLE.hpp"
+#include "POLYGONOBSTACLE.hpp"
 
 class __PLAYER : public Transform {
 private:
-	PolygonDrawable* obstacle;
+	PolygonObstacle* obstacle;
 
 	void initTrarr() {
 		const FLOAT radius = 0.03f;
@@ -19,7 +19,7 @@ private:
 		for (int n = 0; n < N; ++n, cur = rotatem(rot) * cur) {
 			polygon.push_back(cur);
 		}
-		obstacle = new PolygonDrawable(polygon, GLRED);
+		obstacle = new PolygonObstacle(polygon, GLRED);
 	}
 	
 public:
@@ -44,6 +44,15 @@ public:
 	void draw(const Camera& camera) {
 		copyTransform(obstacle, this);
 		obstacle->draw(camera);
+	}
+
+	bool collide(const PolygonObstacle& obstacle1) {
+		auto obs = obstacle->getHitbox();
+		for (auto& vec : obs) {
+			vec += getPos();
+		}
+		auto obs2 = PolygonObstacle(obs, obstacle->getTexture(), obstacle->getColor());
+		return obs2.collide(obstacle1);
 	}
 
 	~__PLAYER() {

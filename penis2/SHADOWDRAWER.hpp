@@ -3,6 +3,7 @@
 
 #include "TRIANGLEARRAY.hpp"
 #include "RENDERTEXTURE.hpp"
+#include "POLYGONOBSTACLE.hpp"
 #include "MATH.h"
 #include "CAMERA.h"
 #include "TEXTURE.h"
@@ -50,8 +51,8 @@ public:
 		}
 	}
 
-	void push(vec2f pos, const PolygonDrawable& poly) {
-		push(pos, poly.box());
+	void push(vec2f pos, PolygonDrawable* poly) {
+		push(pos, poly->box());
 	}
 
 	void draw(const Camera& camera) {

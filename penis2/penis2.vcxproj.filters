@@ -96,7 +96,10 @@
     <ClInclude Include="TRIANGLE.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="SHADOWDRAWER.hpp">
+    <ClInclude Include="GEOMSTRUCTS.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="POLYGONOBSTACLE.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

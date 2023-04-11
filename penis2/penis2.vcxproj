@@ -50,7 +50,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -148,6 +148,7 @@
     <ClInclude Include="CAMERA.hpp" />
     <ClInclude Include="COLOR.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="GEOMSTRUCTS.hpp" />
     <ClInclude Include="GLLOADER.hpp" />
     <ClInclude Include="PLAYER.h" />
     <ClInclude Include="MAT3.hpp" />
@@ -156,10 +157,10 @@
     <ClInclude Include="PLAYER.hpp" />
     <ClInclude Include="POLYGON.hpp" />
     <ClInclude Include="POLYGONDRAWABLE.hpp" />
+    <ClInclude Include="POLYGONOBSTACLE.hpp" />
     <ClInclude Include="RENDERTEXTURE.hpp" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SHADER.hpp" />
-    <ClInclude Include="SHADOWDRAWER.hpp" />
     <ClInclude Include="SPRITE.hpp" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TEXTURE.h" />

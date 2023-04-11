@@ -1,7 +1,7 @@
 #ifndef __POLYGONHPP__
 #define __POLYGONHPP__
 
-#include "TRIANGLE.hpp"
+#include "GEOMSTRUCTS.hpp"
 #include <vector>
 
 template <typename FLOATTYPE>
@@ -50,6 +50,35 @@ public:
             }
         }
         return flag != 3;
+    }
+
+    static bool contains(const POLYGON& a, const vec2f& p) {
+        vec2f hui(0.228f, -13.37f);
+        Ray ray(p, hui);
+        int result = 0;
+        for (size_t i = 0; i < a.size(); ++i) {
+            debug << a.get(i).x << " " << a.get(i).y << "\n";
+            Segment seg(a.get(i), a.get(i + 1));
+            result ^= intersectg(ray, seg);
+            result ^= Ray::isOn(ray, a.get(i));
+        }
+        debug << p.x << " " << p.y << "\n";
+        debug << result << "\n\n\n" << std::endl;
+        return result;
+    }
+
+    static bool intersect(const POLYGON& a, const POLYGON& b) {
+        for (size_t i = 0; i < a.size(); ++i) {
+            if (POLYGON::contains(b, a.get(i))) {
+                return true;
+            }
+        }
+        for (size_t i = 0; i < b.size(); ++i) {
+            if (POLYGON::contains(a, b.get(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 };
 

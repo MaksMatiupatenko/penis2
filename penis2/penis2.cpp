@@ -78,7 +78,8 @@ void destructContext(HWND hWindow, HGLRC gl) {
     wglDeleteContext(gl);
 }
 
-std::vector <PolygonDrawable> drawables;
+std::vector <PolygonDrawable*> drawables;
+std::vector <PolygonObstacle> obstacles;
 
 PLAYER player;
 
@@ -129,15 +130,55 @@ void processAsyncInput() {
     }
     if (GetAsyncKeyState(VK_UP)) {
         player.move(0, timeDiff);
+        bool flag = false;
+        for (const auto& obstacle : obstacles) {
+            if (player.collide(obstacle)) {
+                flag = true;
+                break;
+            }
+        }
+        if (flag) {
+            player.move(0, -timeDiff);
+        }
     }
     if (GetAsyncKeyState(VK_DOWN)) {
         player.move(0, -timeDiff);
+        bool flag = false;
+        for (const auto& obstacle : obstacles) {
+            if (player.collide(obstacle)) {
+                flag = true;
+                break;
+            }
+        }
+        if (flag) {
+            player.move(0, timeDiff);
+        }
     }
     if (GetAsyncKeyState(VK_LEFT)) {
         player.move(-timeDiff, 0);
+        bool flag = false;
+        for (const auto& obstacle : obstacles) {
+            if (player.collide(obstacle)) {
+                flag = true;
+                break;
+            }
+        }
+        if (flag) {
+            player.move(timeDiff, 0);
+        }
     }
     if (GetAsyncKeyState(VK_RIGHT)) {
         player.move(timeDiff, 0);
+        bool flag = false;
+        for (const auto& obstacle : obstacles) {
+            if (player.collide(obstacle)) {
+                flag = true;
+                break;
+            }
+        }
+        if (flag) {
+            player.move(-timeDiff, 0);
+        }
     }
 }
 
@@ -233,8 +274,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
         timeDiff = getTimeDiff(prtime);
         if (timeDiff >= 1/ MAX_FPS) {
             setTime(prtime);
-            processAsyncInput();
             updateFrame();
+            processAsyncInput();
             yaSosuPenis(hWindow);
             GL_SHADERS_ORDER_HANDLER.clear();
         }
@@ -248,7 +289,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 }
 
 void updateFrame() {
-    std::vector <PolygonDrawable> obstacles;
+    obstacles.clear();
     obstacles.emplace_back(Polygonf{
         {0.1, 0.1},
         {0.3, 0.1},
@@ -266,7 +307,7 @@ void updateFrame() {
         {0.8, -0.1},
         {0.5, -0.1}
         }, GLLIGHTGREY);
-    const FLOAT MAXABS = wWidth / wHeight;
+    const FLOAT MAXABS = 1.f * wWidth / wHeight;
     const FLOAT WIDTH = 0.03f;
     obstacles.emplace_back(Polygonf{
         {-MAXABS, -1},
@@ -293,15 +334,17 @@ void updateFrame() {
         {MAXABS - WIDTH, 1}
         }, GLLIGHTGREY);
 
-
+    for (auto i : drawables) {
+        delete i;
+    }
     drawables.clear();
     for (auto obstacle : obstacles) {
-        drawables.push_back(obstacle);
+        drawables.push_back(new PolygonObstacle(obstacle));
     }
 
     shadowDrawer.clear();
-    for (const auto& obs : obstacles) {
-        shadowDrawer.push(player.getPos(), obs);
+    for (const auto& obs : drawables) {
+        shadowDrawer.push(player.getPos(), (PolygonDrawable*) obs);
     }
 }
 
@@ -310,13 +353,14 @@ void yaSosuPenis(HWND hWindow) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     PolygonDrawable(Polygonf{
-        {-0.5, 0.1},
+        {-0.5, 0.0},
         {-0.4, 0.0},
-        {-0.5, 0.0}
-                    }, GLBLUE).draw(camera);
+        {-0.4, 0.1},
+        {-0.5, 0.1}
+                    }, &tex).draw(camera);
     shadowDrawer.draw(camera);
     for (auto ptr : drawables) {
-        ptr.draw(camera);
+        ptr->draw(camera);
     }
 
     player.draw(camera);

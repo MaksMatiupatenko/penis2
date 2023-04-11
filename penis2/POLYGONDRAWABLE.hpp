@@ -65,12 +65,24 @@ public:
 		texture = newTexture;
 	}
 
+	GLTXTR* getTexture() const {
+		return texture;
+	}
+
 	void setColor(COLOR newColor) {
 		arrset = FALSE;
 		color = newColor;
 	}
 
+	COLOR getColor() const {
+		return color;
+	}
+
 	const Polygonf& box() const {
+		return hitbox;
+	}
+
+	const decltype(hitbox)& getHitbox() const {
 		return hitbox;
 	}
 
