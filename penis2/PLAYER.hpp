@@ -47,12 +47,8 @@ public:
 	}
 
 	bool collide(const PolygonObstacle& obstacle1) {
-		auto obs = obstacle->getHitbox();
-		for (auto& vec : obs) {
-			vec += getPos();
-		}
-		auto obs2 = PolygonObstacle(obs, obstacle->getTexture(), obstacle->getColor());
-		return obs2.collide(obstacle1);
+		copyTransform(obstacle, this);
+		return obstacle->collide(obstacle1);
 	}
 
 	~__PLAYER() {

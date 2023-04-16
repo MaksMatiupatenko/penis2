@@ -8,7 +8,15 @@ public:
 	using PolygonDrawable::PolygonDrawable;
 
 	bool collide(const PolygonObstacle& obstacle) {
-		return Polygonf::intersect(getHitbox(), obstacle.getHitbox());
+		auto t = getHitbox();
+		for (auto& p : t) {
+			p += getPos();
+		}
+		auto t2 = obstacle.getHitbox();
+		for (auto& p : t2) {
+			p += obstacle.getPos();
+		}
+		return Polygonf::intersect(t, t2);
 	}
 };
 

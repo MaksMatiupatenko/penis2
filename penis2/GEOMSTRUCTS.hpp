@@ -13,7 +13,7 @@ struct Ray {
 
 	static bool isOn(const Ray& ray, const vec2f& p) {
 		vec2f ap(ray.a, p);
-		return crss(ap, ray.dir) == 0 && dt(ap, ray.dir) >= 0;
+		return sgn(crss(ap, ray.dir)) == 0 && sgn(dt(ap, ray.dir)) >= 0;
 	}
 };
 
@@ -29,11 +29,11 @@ bool intersectg(Ray r, Segment s) {
 	auto [a, dir] = r;
 	auto [b, c] = s;
 	vec2f ab(a, b), ac(a, c);
-	bool check1 = crss(dir, ab) * crss(dir, ac) <= 0;
+	bool check1 = sgn(crss(dir, ab)) * sgn(crss(dir, ac)) <= 0;
 	if (!check1) {
 		return false;
 	}
-	return dt(dir, ab) >= 0 && dt(dir, ac) >= 0;
+	return sgn(dt(dir, ab)) >= 0 && sgn(dt(dir, ac)) >= 0;
 }
 
 bool intersectg(Segment s, Ray r) {

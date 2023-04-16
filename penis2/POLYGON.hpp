@@ -56,14 +56,17 @@ public:
         vec2f hui(0.228f, -13.37f);
         Ray ray(p, hui);
         int result = 0;
+        int flag = 0;
         for (size_t i = 0; i < a.size(); ++i) {
-            debug << a.get(i).x << " " << a.get(i).y << "\n";
+            //debug << a.get(i).x << " " << a.get(i).y << "\n";
             Segment seg(a.get(i), a.get(i + 1));
             result ^= intersectg(ray, seg);
+            flag |= result;
             result ^= Ray::isOn(ray, a.get(i));
+            flag |= result;
         }
-        debug << p.x << " " << p.y << "\n";
-        debug << result << "\n\n\n" << std::endl;
+        //debug << p.x << " " << p.y << "\n";
+        debug << result << flag << "|";
         return result;
     }
 

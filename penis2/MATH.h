@@ -3,6 +3,18 @@
 
 #include "BASE.h";
 
+const FLOAT EPS = 1e-4;
+
+int sgn(FLOAT a) {
+	if (a > EPS) {
+		return 1;
+	}
+	if (a < -EPS) {
+		return -1;
+	}
+	return 0;
+}
+
 //--------------------------------------------------- 2 dimensional vector
 #include "VEC2.hpp"
 

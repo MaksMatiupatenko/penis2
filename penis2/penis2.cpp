@@ -104,7 +104,7 @@ void yaSosuPenis(HWND hwindow);
 void updateFrame();
 
 void processAsyncInput() {
-    if (GetAsyncKeyState('W')) {
+    /*if (GetAsyncKeyState('W')) {
         camera.move(0, timeDiff);
     }
     if (GetAsyncKeyState('S')) {
@@ -127,58 +127,33 @@ void processAsyncInput() {
     }
     if (GetAsyncKeyState('X')) {
         camera.scale(exp(-timeDiff));
-    }
+    }*/
+    vec2f pos0 = player.getPos();
+    vec2f mw = { 0, 0 };
+    bool flag = false;
     if (GetAsyncKeyState(VK_UP)) {
-        player.move(0, timeDiff);
-        bool flag = false;
-        for (const auto& obstacle : obstacles) {
-            if (player.collide(obstacle)) {
-                flag = true;
-                break;
-            }
-        }
-        if (flag) {
-            player.move(0, -timeDiff);
-        }
+        mw.y += 1;
     }
     if (GetAsyncKeyState(VK_DOWN)) {
-        player.move(0, -timeDiff);
-        bool flag = false;
-        for (const auto& obstacle : obstacles) {
-            if (player.collide(obstacle)) {
-                flag = true;
-                break;
-            }
-        }
-        if (flag) {
-            player.move(0, timeDiff);
-        }
+        mw.y -= 1;
     }
     if (GetAsyncKeyState(VK_LEFT)) {
-        player.move(-timeDiff, 0);
-        bool flag = false;
-        for (const auto& obstacle : obstacles) {
-            if (player.collide(obstacle)) {
-                flag = true;
-                break;
-            }
-        }
-        if (flag) {
-            player.move(timeDiff, 0);
-        }
+        mw.x -= 1;
     }
     if (GetAsyncKeyState(VK_RIGHT)) {
-        player.move(timeDiff, 0);
-        bool flag = false;
-        for (const auto& obstacle : obstacles) {
-            if (player.collide(obstacle)) {
-                flag = true;
-                break;
-            }
+        mw.x += 1;
+    }
+    mw = normalize(mw) * timeDiff;
+    player.move(mw.x, mw.y);
+    for (const auto& obstacle : obstacles) {
+        if (player.collide(obstacle)) {
+            flag = true;
+            break;
         }
-        if (flag) {
-            player.move(-timeDiff, 0);
-        }
+    }
+    debug << "\n\n\n";
+    if (flag) {
+        player.setPos(pos0);
     }
 }
 
@@ -346,6 +321,7 @@ void updateFrame() {
     for (const auto& obs : drawables) {
         shadowDrawer.push(player.getPos(), (PolygonDrawable*) obs);
     }
+
 }
 
 void yaSosuPenis(HWND hWindow) {

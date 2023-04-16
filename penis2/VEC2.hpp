@@ -125,6 +125,9 @@ public:
 	}
 
 	friend VEC normalize(CREF vec) {
+		if (!lensq(vec)) {
+			return vec;
+		}
 		return vec / len(vec);
 	}
 
@@ -136,5 +139,6 @@ public:
 private:
 #undef DVEC
 };
+
 
 #endif
