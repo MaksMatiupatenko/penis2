@@ -53,21 +53,11 @@ public:
     }
 
     static bool contains(const POLYGON& a, const vec2f& p) {
-        vec2f hui(0.228f, -13.37f);
-        Ray ray(p, hui);
-        int result = 0;
-        int flag = 0;
-        for (size_t i = 0; i < a.size(); ++i) {
-            //debug << a.get(i).x << " " << a.get(i).y << "\n";
-            Segment seg(a.get(i), a.get(i + 1));
-            result ^= intersectg(ray, seg);
-            flag |= result;
-            result ^= Ray::isOn(ray, a.get(i));
-            flag |= result;
+        float angle = 0;
+        for (int i = 0; i < a.size(); ++i) {
+            angle += atan2(crss(a.get(i) - p, a.get(i + 1) - p), dt(a.get(i) - p, a.get(i + 1) - p));
         }
-        //debug << p.x << " " << p.y << "\n";
-        debug << result << flag << "|";
-        return result;
+        return abs(angle) > acos(-1);
     }
 
     static bool intersect(const POLYGON& a, const POLYGON& b) {
