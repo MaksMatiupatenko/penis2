@@ -51,6 +51,11 @@ public:
 		return obstacle->collide(obstacle1);
 	}
 
+	vec2f getCollNormal(const PolygonObstacle& obstacle1) {
+		copyTransform(obstacle, this);
+		return obstacle->getCollNormal(obstacle1);
+	}
+
 	~__PLAYER() {
 		delete obstacle;
 	}

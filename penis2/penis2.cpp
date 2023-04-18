@@ -130,7 +130,6 @@ void processAsyncInput() {
     }*/
     vec2f pos0 = player.getPos();
     vec2f mw = { 0, 0 };
-    bool flag = false;
     if (GetAsyncKeyState(VK_UP)) {
         mw.y += 1;
     }
@@ -145,15 +144,76 @@ void processAsyncInput() {
     }
     mw = normalize(mw) * timeDiff;
     player.move(mw.x, mw.y);
+    bool flag = false;
     for (const auto& obstacle : obstacles) {
         if (player.collide(obstacle)) {
             flag = true;
             break;
         }
     }
-    debug << "\n\n\n";
+    
     if (flag) {
+        float l = 0, r = 1;
+        for (int iter = 0; iter < 30; ++iter) {
+            float m = (l + r) / 2;
+            player.setPos(pos0);
+            player.move(mw * m);
+
+            flag = false;
+            for (const auto& obstacle : obstacles) {
+                if (player.collide(obstacle)) {
+                    flag = true;
+                    break;
+                }
+            }
+
+            if (flag) r = m;
+            else l = m;
+        }
+        
         player.setPos(pos0);
+        player.move(mw * r);
+
+        const PolygonObstacle* coll = nullptr;
+        for (const auto& obstacle : obstacles) {
+            if (player.collide(obstacle)) {
+                coll = &obstacle;
+                break;
+            }
+        }
+        
+        player.setPos(pos0);
+        player.move(mw * l);
+        pos0 = player.getPos();
+
+        if (false && coll) {
+            vec2f nm = player.getCollNormal(*coll);
+
+            mw = mw * (1 - l);
+            mw = mw - nm * dt(nm, mw);
+
+            l = 1; r = 1;
+            for (int iter = 0; iter < 30; ++iter) {
+                float m = (l + r) / 2;
+                player.setPos(pos0);
+                player.move(mw * m);
+
+                flag = false;
+                for (const auto& obstacle : obstacles) {
+                    if (player.collide(obstacle)) {
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if (flag) r = m;
+                else l = m;
+            }
+
+            player.setPos(pos0);
+            player.move(mw * l);
+        }
+        
     }
 }
 

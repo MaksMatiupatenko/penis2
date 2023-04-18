@@ -120,4 +120,11 @@ using Polygond = Polygon_t<FLOAT64>;
 //-------------------------------------------------------------------------
 
 
+float segmentDist(vec2f a, vec2f b, vec2f p) {
+	if (dt(b - a, p - a) < 0) return len(a - p);
+	if (dt(a - b, p - b) < 0) return len(b - p);
+	return abs(crss(b - a, p - a) / len(b - a));
+}
+
+
 #endif

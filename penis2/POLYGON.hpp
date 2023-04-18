@@ -60,6 +60,33 @@ public:
         return abs(angle) > acos(-1);
     }
 
+    static vec2f getNormal(const POLYGON& a, const vec2f& p) {
+        float adst = 1e10;
+        int ind = 0;
+        for (int i = 0; i < a.size(); ++i) {
+            if (segmentDist(a.get(i + 1), a.get(i), p) < adst) {
+                adst = segmentDist(a.get(i + 1), a.get(i), p);
+                ind = i;
+            }
+        }
+
+        return normalize(vec2f((a.get(ind + 1) - a.get(ind)).y, -(a.get(ind + 1) - a.get(ind)).x));
+    }
+
+    static vec2f getCollNormal(const POLYGON& a, const POLYGON& b) {
+        for (size_t i = 0; i < a.size(); ++i) {
+            if (POLYGON::contains(b, a.get(i))) {
+                return getNormal(b, a.get(i));
+            }
+        }
+        for (size_t i = 0; i < b.size(); ++i) {
+            if (POLYGON::contains(a, b.get(i))) {
+                return getNormal(a, b.get(i));
+            }
+        }
+        return { 0, 0 };
+    }
+
     static bool intersect(const POLYGON& a, const POLYGON& b) {
         for (size_t i = 0; i < a.size(); ++i) {
             if (POLYGON::contains(b, a.get(i))) {
