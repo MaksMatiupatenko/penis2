@@ -36,6 +36,35 @@ bool intersectg(Ray r, Segment s) {
 	return sgn(dt(dir, ab)) >= 0 && sgn(dt(dir, ac)) >= 0;
 }
 
+bool inters(int l1, int r1, int l2, int r2) {
+	if (l1 > r1) {
+		std::swap(l1, r1);
+	}
+	if (l2 > r2) {
+		std::swap(l2, r2);
+	}
+	if (l1 > l2) {
+		std::swap(l1, l2);
+		std::swap(r1, r2);
+	}
+	return (l2 >= l1 && l2 <= r2);
+}
+
+bool intersectg(Segment a, Segment b) {
+	if (!inters(a.a.x, a.b.x, b.a.x, b.a.x) ||
+		!inters(a.a.y, a.b.y, b.a.y, b.b.y)) {
+		return false;
+	}
+	auto [c, d] = a;
+	auto [e, f] = b;
+	vec2f cd(c, d);
+	vec2f ef(e, f);
+	vec2f ce(c, e), cf(c, f);
+	vec2f ec(e, c), ed(e, d);
+	return sgn(crss(ce, cd)) * sgn(crss(cf, cd)) <= 0 &&
+		sgn(crss(ec, ef)) * sgn(crss(ed, ef)) <= 0;
+}
+
 bool intersectg(Segment s, Ray r) {
 	return intersectg(r, s);
 }

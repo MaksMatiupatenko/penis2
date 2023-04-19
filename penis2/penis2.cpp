@@ -174,10 +174,12 @@ void processAsyncInput() {
         player.setPos(pos0);
         player.move(mw * r);
 
-        const PolygonObstacle* coll = nullptr;
+        PolygonObstacle coll({}, {});
+        bool ff = false;
         for (const auto& obstacle : obstacles) {
             if (player.collide(obstacle)) {
-                coll = &obstacle;
+                coll = obstacle;
+                ff = true;
                 break;
             }
         }
@@ -186,8 +188,8 @@ void processAsyncInput() {
         player.move(mw * l);
         pos0 = player.getPos();
 
-        if (false && coll) {
-            vec2f nm = player.getCollNormal(*coll);
+        if (false && ff) {
+            vec2f nm = player.getCollNormal(coll);
 
             mw = mw * (1 - l);
             mw = mw - nm * dt(nm, mw);
@@ -393,7 +395,7 @@ void yaSosuPenis(HWND hWindow) {
         {-0.4, 0.0},
         {-0.4, 0.1},
         {-0.5, 0.1}
-                    }, &tex).draw(camera);
+                    }, GLLIGHTBLUE).draw(camera);
     shadowDrawer.draw(camera);
     for (auto ptr : drawables) {
         ptr->draw(camera);

@@ -13,5 +13,6 @@ typedef vec4f COLOR;
 #define GLLIGHTGREY  vec4f(0.7, 0.7, 0.7, 1)
 #define GLGREY vec4f(0.5, 0.5, 0.5, 1)
 #define GLYELLOW vec4f(1, 1, 0, 1)
+#define GLLIGHTBLUE vec4f(0.65, 0.65, 1, 1)
 
 #endif

@@ -98,6 +98,14 @@ public:
                 return true;
             }
         }
+        for (size_t i = 0; i < a.size(); ++i) {
+            Segment seg1(a.get(i), a.get(i + 1));
+            for (size_t j = 0; j < b.size(); ++j) {
+                if (intersectg(seg1, Segment(b.get(j), b.get(j + 1)))) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 };
