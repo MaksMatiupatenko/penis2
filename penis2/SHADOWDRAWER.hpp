@@ -51,7 +51,7 @@ public:
 		}
 	}
 
-	void push(vec2f pos, PolygonDrawable* poly) {
+	void push(vec2f pos, Drawable* poly) {
 		push(pos, poly->box());
 	}
 

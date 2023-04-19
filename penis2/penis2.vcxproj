@@ -146,6 +146,8 @@
     <ClInclude Include="BASE.h" />
     <ClInclude Include="CAMERA.h" />
     <ClInclude Include="CAMERA.hpp" />
+    <ClInclude Include="COLLIDER.hpp" />
+    <ClInclude Include="COLLISION.hpp" />
     <ClInclude Include="COLOR.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GEOMSTRUCTS.hpp" />

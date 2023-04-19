@@ -3,9 +3,9 @@
 
 #include "POLYGONDRAWABLE.hpp"
 
-class PolygonObstacle : public PolygonDrawable {
+class PolygonObstacle : public Drawable {
 public:
-	using PolygonDrawable::PolygonDrawable;
+	using Drawable::Drawable;
 
 	bool collide(const PolygonObstacle& obstacle) {
 		auto t = getHitbox();

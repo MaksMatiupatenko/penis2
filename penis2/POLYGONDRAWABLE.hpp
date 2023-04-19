@@ -10,7 +10,7 @@
 #include "TRIANGLEARRAY.hpp"
 #include <cassert>
 
-class PolygonDrawable : public Transform {
+class Drawable : public Transform {
 private:
 	Polygonf hitbox{};
 	COLOR color = GLWHITE;
@@ -52,12 +52,12 @@ private:
 
 public:
 
-	PolygonDrawable(const Polygonf& hitbox, COLOR color = GLWHITE) : hitbox(hitbox), color(color) { }
+	Drawable(const Polygonf& hitbox, COLOR color = GLWHITE) : hitbox(hitbox), color(color) { }
 
 	/// <summary>
 	/// Constructor takes a convex polygon #hitbox, a texture #texture and a colorFilter, which is a color texture will be multiplicated
 	/// </summary>
-	PolygonDrawable(const Polygonf& hitbox, GLTXTR* texture, COLOR colorFilter = GLWHITE) : 
+	Drawable(const Polygonf& hitbox, GLTXTR* texture, COLOR colorFilter = GLWHITE) : 
 		hitbox(hitbox), texture(texture), color(colorFilter) { }
 
 	void setTexture(GLTXTR* newTexture) {

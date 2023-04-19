@@ -17,6 +17,8 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
+#include "COLLIDER.hpp"
+
 #define STR_SIZE 100
 
 LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM lParam);
@@ -78,7 +80,7 @@ void destructContext(HWND hWindow, HGLRC gl) {
     wglDeleteContext(gl);
 }
 
-std::vector <PolygonDrawable*> drawables;
+std::vector <Drawable*> drawables;
 std::vector <PolygonObstacle> obstacles;
 
 PLAYER player;
@@ -381,7 +383,7 @@ void updateFrame() {
 
     shadowDrawer.clear();
     for (const auto& obs : drawables) {
-        shadowDrawer.push(player.getPos(), (PolygonDrawable*) obs);
+        shadowDrawer.push(player.getPos(), (Drawable*) obs);
     }
 
 }
@@ -390,7 +392,7 @@ void yaSosuPenis(HWND hWindow) {
     glClearColor(1, 1, 1, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    PolygonDrawable(Polygonf{
+    Drawable(Polygonf{
         {-0.5, 0.0},
         {-0.4, 0.0},
         {-0.4, 0.1},
