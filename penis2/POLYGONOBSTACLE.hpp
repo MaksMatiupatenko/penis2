@@ -1,7 +1,7 @@
 #ifndef __POLYGONOBSTACLEHPP__
 #define __POLYGONOBSTACLEHPP__
 
-#include "POLYGONDRAWABLE.hpp"
+#include "DRAWABLE.hpp"
 
 class PolygonObstacle : public Drawable {
 public:

@@ -117,6 +117,17 @@ using Polygonl = Polygon_t<INT64>;
 
 using Polygonf = Polygon_t<FLOAT>;
 using Polygond = Polygon_t<FLOAT64>;
+
+Polygonf getCircleModel(float radius, int N = 50) {
+	vec2f cur = { radius, 0 };
+	const FLOAT rot = 2 * PI / N;
+	Polygonf polygon;
+	for (int n = 0; n < N; ++n, cur = rotatem(rot) * cur) {
+		polygon.push_back(cur);
+	}
+	return polygon;
+}
+
 //-------------------------------------------------------------------------
 
 

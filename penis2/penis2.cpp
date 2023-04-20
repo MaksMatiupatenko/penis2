@@ -11,15 +11,14 @@
 #include "TIME.hpp"
 #include "PLAYER.h"
 #include "SHADOWDRAWER.hpp"
-#include "POLYGONDRAWABLE.hpp"
+#include "DRAWABLE.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+#include "RIGIDBODY.hpp"
 
 #include "COLLIDER.hpp"
-
-#define STR_SIZE 100
 
 LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -61,8 +60,8 @@ HGLRC createContext(HWND hWindow) {
         const HGLRC gl_boostrap = wglCreateContext(canvas);
         wglMakeCurrent(canvas, gl_boostrap);
 
-        gl = reinterpret_cast<PFNWGLCREATECONTEXTATRIBSARBPROC>
-            (wglGetProcAddress("wglCreateContextAttribsARB"))
+        INT64 tmp = (INT64) (PROC) wglGetProcAddress("wglCreateContextAttribsARB");
+        gl = reinterpret_cast<PFNWGLCREATECONTEXTATRIBSARBPROC> (tmp)
             (canvas, NULL, context_attributes);
         wglMakeCurrent(canvas, gl);
         wglDeleteContext(gl_boostrap);
@@ -84,6 +83,7 @@ std::vector <Drawable*> drawables;
 std::vector <PolygonObstacle> obstacles;
 
 PLAYER player;
+RigidBody penis;
 
 HGLRC context;
 
@@ -106,7 +106,7 @@ void yaSosuPenis(HWND hwindow);
 void updateFrame();
 
 void processAsyncInput() {
-    /*if (GetAsyncKeyState('W')) {
+    if (GetAsyncKeyState('W')) {
         camera.move(0, timeDiff);
     }
     if (GetAsyncKeyState('S')) {
@@ -129,9 +129,10 @@ void processAsyncInput() {
     }
     if (GetAsyncKeyState('X')) {
         camera.scale(exp(-timeDiff));
-    }*/
+    }
     vec2f pos0 = player.getPos();
     vec2f mw = { 0, 0 };
+    mw = { 0, 0 };
     if (GetAsyncKeyState(VK_UP)) {
         mw.y += 1;
     }
@@ -144,7 +145,11 @@ void processAsyncInput() {
     if (GetAsyncKeyState(VK_RIGHT)) {
         mw.x += 1;
     }
-    mw = normalize(mw) * timeDiff;
+    penis.velocity += normalize(mw) * timeDiff * 0.05f;
+    if (len(penis.velocity) > 4.f) {
+        penis.velocity = normalize(penis.velocity) * 4.f;
+    }
+    /*
     player.move(mw.x, mw.y);
     bool flag = false;
     for (const auto& obstacle : obstacles) {
@@ -217,8 +222,9 @@ void processAsyncInput() {
             player.setPos(pos0);
             player.move(mw * l);
         }
-        
     }
+    */
+    //camera.setPos(player.getPos());
 }
 
 void updateConditions();
@@ -232,6 +238,8 @@ void boundVector(vec2f& vec) {
     vec.x = max(vec.x, -1);
     vec.y = max(vec.y, -1);
 }
+
+std::vector <RigidBody*> bodies;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandLine, int nCommandShow) {
     /*                      */
@@ -303,6 +311,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     shadowDrawer.create(wWidth, wHeight);
     shadowDrawer.setShadowColor(vec4f(0, 0, 0, 0.5));
 
+    penis.setMass(1);
+    penis.restitution = 1;
+    penis.setDrawModel(new Drawable(makeCircle(GLRED, 0.1f)));
+    penis.setCollider(new CircleCollider({ {0, 0}, 0.1f }));
+
+    bodies.push_back(&penis);
+
+    bodies.push_back(
+        new RigidBody(
+            1, 1, 
+            new CircleCollider({ { 0, 0 }, 0.1f }),
+            new Drawable(makeCircle(GLBLUE, 0.1f))
+        )
+    );
+    bodies.back()->setPos(0.5f, 0.5f);
+
     ShowWindow(hWindow, nCommandShow);
     UpdateWindow(hWindow);
 
@@ -328,7 +352,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 }
 
 void updateFrame() {
-    obstacles.clear();
+    /*obstacles.clear();
     obstacles.emplace_back(Polygonf{
         {0.1, 0.1},
         {0.3, 0.1},
@@ -384,8 +408,17 @@ void updateFrame() {
     shadowDrawer.clear();
     for (const auto& obs : drawables) {
         shadowDrawer.push(player.getPos(), (Drawable*) obs);
+    }*/
+    for (size_t i = 0; i < bodies.size(); ++i) {
+        for (size_t j = i + 1; j < bodies.size(); ++j) {
+            resolveCollision(*bodies[i], *bodies[j]);
+        }
     }
-
+    for (size_t i = 0; i < bodies.size(); ++i) {
+        //debug << len(bodies[i]->velocity) << std::endl;
+        bodies[i]->move(bodies[i]->velocity);
+        bodies[i]->velocity *= 0.99f;
+    }
 }
 
 void yaSosuPenis(HWND hWindow) {
@@ -403,7 +436,11 @@ void yaSosuPenis(HWND hWindow) {
         ptr->draw(camera);
     }
 
-    player.draw(camera);
+    for (auto i : bodies) {
+        i->draw(camera);
+    }
+    //penis.draw(camera);
+    //player.draw(camera);
 
     auto hdc = GetDC(hWindow);
     SwapBuffers(hdc);

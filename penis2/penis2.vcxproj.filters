@@ -84,7 +84,7 @@
     <ClInclude Include="TRANSFORM.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="POLYGONDRAWABLE.hpp">
+    <ClInclude Include="DRAWABLE.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="COLOR.h">
@@ -106,6 +106,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="COLLISION.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="RIGIDBODY.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

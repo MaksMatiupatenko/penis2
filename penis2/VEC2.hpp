@@ -97,7 +97,14 @@ public:
 	bool operator!=(CREF vec) CONST {
 		return !(*THIS == vec);
 	}
+
+	TYPE lensq() const {
+		return dt(*this, *this);
+	}
 //----------------------------------------------------------------
+
+	friend TYPE lensq(CREF);
+	
 
 	friend TYPE dt(CREF vec1, CREF vec2) {
 		return vec1.x * vec2.x + vec1.y * vec2.y;
@@ -108,16 +115,15 @@ public:
 	}
 
 	friend TYPE lensq(CREF vec1) {
-		return dt(vec1, vec1);
+		return vec1.lensq();
 	}
 
-
 	friend TYPE len(CREF vec1) {
-		return sqrt(lenpw2(vec1));
+		return sqrt(vec1.lensq());
 	}
 
 	friend TYPE dstsq(CREF vec1, CREF vec2) {
-		return lensq({ vec1, vec2 });
+		return VEC(vec1, vec2).lensq();
 	}
 
 	friend TYPE dst(CREF vec1, CREF vec2) {
@@ -125,7 +131,7 @@ public:
 	}
 
 	friend VEC normalize(CREF vec) {
-		if (!lensq(vec)) {
+		if (!vec.lensq()) {
 			return vec;
 		}
 		return vec / len(vec);

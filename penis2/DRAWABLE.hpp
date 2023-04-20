@@ -17,6 +17,11 @@ private:
 	GLTXTR* texture = nullptr;
 	TRARR trarr{};
 
+
+	mat3f getAbsoluteMat() const {
+		return getMat() * (baseTransform ? baseTransform->getMat() : mat3f{});
+	}
+
 	void setTrArr() {
 		trarr.clear();
 		auto triangulation = PolygonTriangulator<FLOAT>::get(hitbox);
@@ -51,6 +56,7 @@ private:
 	BOOL arrset = FALSE;
 
 public:
+	Transform* baseTransform{};
 
 	Drawable(const Polygonf& hitbox, COLOR color = GLWHITE) : hitbox(hitbox), color(color) { }
 
@@ -93,13 +99,17 @@ public:
 		if (texture != nullptr) {
 			basicDraw.setUniform("tex", *texture);
 			basicDraw.setUniform("hasTexture", 1);
-			trarr.draw(basicDraw, Transform::getMat(), camera);
+			trarr.draw(basicDraw, getAbsoluteMat(), camera);
 		}
 		else {
 			basicDraw.setUniform("hasTexture", 0);
-			trarr.draw(basicDraw, Transform::getMat(), camera);
+			trarr.draw(basicDraw, getAbsoluteMat(), camera);
 		}
 	}
 };
+
+Drawable makeCircle(COLOR color, float radius, int N = 50) {
+	return { getCircleModel(radius, N), color};
+}
 
 #endif

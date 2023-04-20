@@ -158,10 +158,11 @@
     <ClInclude Include="penis2.h" />
     <ClInclude Include="PLAYER.hpp" />
     <ClInclude Include="POLYGON.hpp" />
-    <ClInclude Include="POLYGONDRAWABLE.hpp" />
+    <ClInclude Include="DRAWABLE.hpp" />
     <ClInclude Include="POLYGONOBSTACLE.hpp" />
     <ClInclude Include="RENDERTEXTURE.hpp" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="RIGIDBODY.hpp" />
     <ClInclude Include="SHADER.hpp" />
     <ClInclude Include="SPRITE.hpp" />
     <ClInclude Include="targetver.h" />

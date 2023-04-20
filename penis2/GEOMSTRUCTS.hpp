@@ -25,6 +25,17 @@ struct Segment {
 	Segment(vec2f a, vec2f b) : a(a), b(b) { }
 };
 
+struct Circle {
+	vec2f center{};
+	float radius{};
+};
+
+bool intersectg(Circle a, Circle b) {
+	float dsts = len(vec2f(a.center, b.center));
+	float sumr = a.radius + b.radius;
+	return sumr * sumr >= dsts;
+}	
+
 bool intersectg(Ray r, Segment s) {
 	auto [a, dir] = r;
 	auto [b, c] = s;
