@@ -96,6 +96,8 @@ ShadowDrawer shadowDrawer;
 
 vec2f mousePos;
 
+std::vector <RigidBody*> bodies;
+
 int wWidth, wHeight;
 
 TIME_T prtime;
@@ -133,6 +135,18 @@ void processAsyncInput() {
         camera.scale(exp(-timeDiff));
     }
 
+    if (GetAsyncKeyState(VK_LBUTTON)) {
+        bodies.push_back(
+            new RigidBody(
+                0.05, 1,
+                new PolygonCollider(getCircleModel(0.01, 4)),
+                new Drawable(makeCircle(GLBLUE, 0.01f, 4))
+            )
+        );
+        bodies.back()->setPos(penis.getMat() * vec2f(0.15, 0));
+        bodies.back()->velocity = vec2f(penis.getMat() * vec3f(1, 0, 0));
+    }
+
 
 
     vec2f pos0 = player.getPos();
@@ -167,8 +181,6 @@ void boundVector(vec2f& vec) {
     vec.x = max(vec.x, -1);
     vec.y = max(vec.y, -1);
 }
-
-std::vector <RigidBody*> bodies;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandLine, int nCommandShow) {
     /*                      */
@@ -435,6 +447,10 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
         tex2.destruct();
         tex3.destruct();
         shadowDrawer.destruct();
+        for (auto& x : bodies) {
+            delete x;
+        }
+        bodies.clear();
         windowOpen = false;
         return 0;
     }
