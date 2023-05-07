@@ -14,6 +14,7 @@ public:
 	vec2f velocity{};
 	float restitution{};
 	Collider* collider{};
+	vec2f gravity = { 0, -9.81f * 0.02};
 	
 	RigidBody() = default;
 
@@ -81,12 +82,18 @@ public:
 	}
 
 	void update(float timeDiff) {
+		if (invMass != 0) {
+			velocity += gravity * timeDiff;
+		}
 		Transform::absMove(velocity * timeDiff);
 		velocity *= 0.99f;
 	}
 };
 
 void resolveCollision(RigidBody& A, RigidBody& B) {
+	if (!A.getInvMass() && !B.getInvMass()) {
+		return;
+	}
 	auto [collide, normal, pos] = A.collider->get(B.collider);
 	if (!collide) {
 		return;

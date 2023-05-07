@@ -152,9 +152,6 @@ void processAsyncInput() {
     }
     //mw = mw * timeDiff;
     penis.velocity += vec2f(penis.getMat() * vec3f(normalize(mw) * timeDiff, 0));
-    if (len(penis.velocity) > 4.f) {
-        penis.velocity = normalize(penis.velocity) * 4.f;
-    }
     
     camera.setPos(penis.getPos());
 }
@@ -297,7 +294,63 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
             new Drawable(makeCircle(GLBLUE, 0.1f))
         )
     );
-    bodies.back()->setPos(0.3f, -0.9f);
+    bodies.back()->setPos(0.3f, -0.8f);
+
+    Polygonf eldak = 
+    { { -1, -1 },
+    { 1, -1 },
+    { 1, -0.9 },
+    { -1, -0.9 } };
+    bodies.push_back(
+        new RigidBody(
+            0, 5,
+            new PolygonCollider(eldak),
+            new Drawable(eldak, GLLIGHTGREY)
+        )
+    );
+
+    eldak = 
+    { { -1, 1 },
+    { 1, 1 },
+    { 1, 0.9 },
+    { -1, 0.9 } };
+    std::reverse(eldak.begin(), eldak.end());
+    bodies.push_back(
+        new RigidBody(
+            0, 5,
+            new PolygonCollider(eldak),
+            new Drawable(eldak, GLLIGHTGREY)
+        )
+    );
+
+    eldak =
+    { {-1, -0.9},
+    {-0.9, -0.9},
+    {-0.9, 0.9},
+    {-1, 0.9} };
+    bodies.push_back(
+        new RigidBody(
+            0, 5,
+            new PolygonCollider(eldak),
+            new Drawable(eldak, GLLIGHTGREY)
+        )
+    );
+
+    eldak =
+    { {1, -0.9},
+    {0.9, -0.9},
+    {0.9, 0.9},
+    {1, 0.9} };
+    std::reverse(eldak.begin(), eldak.end());
+    bodies.push_back(
+        new RigidBody(
+            0, 5,
+            new PolygonCollider(eldak),
+            new Drawable(eldak, GLLIGHTGREY)
+        )
+    );
+
+    camera.setScale(1);
 
     ShowWindow(hWindow, nCommandShow);
     UpdateWindow(hWindow);
