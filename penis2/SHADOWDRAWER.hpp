@@ -7,6 +7,7 @@
 #include "MATH.h"
 #include "CAMERA.h"
 #include "TEXTURE.h"
+#include "RIGIDBODY.hpp"
 
 class ShadowDrawer {
 private:
@@ -53,6 +54,12 @@ public:
 
 	void push(vec2f pos, Drawable* poly) {
 		push(pos, poly->box());
+	}
+
+	void push(vec2f pos, RigidBody* poly) {
+		for (int i = 0; i < poly->getDrawable()->box().size(); ++i) {
+			push(pos, poly->getMat() * poly->getDrawable()->box().get(i), poly->getMat() * poly->getDrawable()->box().get(i + 1));
+		}
 	}
 
 	void draw(const Camera& camera) {

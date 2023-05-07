@@ -2,6 +2,7 @@
 
 #include "COLLIDER.hpp"
 #include "DRAWABLE.hpp"
+#include "DRAWHUI.h"
 
 struct RigidBody : public Transform {
 private:
@@ -74,10 +75,19 @@ public:
 			return drawable->draw(camera);
 		}
 	}
+
+	Drawable* getDrawable() const {
+		return drawable;
+	}
+
+	void update(float timeDiff) {
+		Transform::absMove(velocity * timeDiff);
+		velocity *= 0.99f;
+	}
 };
 
 void resolveCollision(RigidBody& A, RigidBody& B) {
-	auto [collide, normal, depth] = A.collider->get(B.collider);
+	auto [collide, normal, pos] = A.collider->get(B.collider);
 	if (!collide) {
 		return;
 	}
@@ -92,4 +102,21 @@ void resolveCollision(RigidBody& A, RigidBody& B) {
 	vec2f impulse = normal * j;
 	A.velocity += impulse * A.getInvMass();
 	B.velocity -= impulse * B.getInvMass();
+
+	Polygonf strelka;
+	strelka.push(0.1, -1);
+	strelka.push(0.1, 0.6);
+	strelka.push(0.4, 0.6);
+	strelka.push(0.0, 1);
+	strelka.push(-0.4, 0.6);
+	strelka.push(-0.1, 0.6);
+	strelka.push(-0.1, -1);
+
+	Drawable dr(strelka, GLYELLOW);
+	dr.setPos(pos);
+	dr.setScale(0.1);
+	dr.setAngle(atan2(-normal.x, normal.y));
+
+
+	drawhui.push_back(dr);
 }

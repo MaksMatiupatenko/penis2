@@ -31,6 +31,7 @@ public:
 	DVEC(CTREF x, CTREF y, CTREF z): x(x), y(y), z(z) {}
 	DVEC(CREF f, CREF s): x(s.x - f.x), y(s.y - f.y), z(s.z - f.z) {}
 	DVEC(__VEC2<TYPE> vec): x(vec.x), y(vec.y), z(0) {}
+	DVEC(__VEC2<TYPE> vec, CTREF z): x(vec.x), y(vec.y), z(z) {}
 
 	REF operator=(CREF other) {
 		x = other.x;
@@ -135,6 +136,11 @@ public:
 	template <class type>
 	operator DVEC<type>() CONST {
 		return { x, y, z };
+	}
+
+	template <class type>
+	operator __VEC2<type>() CONST {
+		return { x, y };
 	}
 
 private:

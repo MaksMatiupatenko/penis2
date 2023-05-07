@@ -53,6 +53,12 @@ public:
 	void move(float x, float y) {
 		move({ x, y });
 	}
+	void absMove(const vec2f& vec) {
+		tpos += vec;
+	}
+	void absMove(float x, float y) {
+		absMove({ x, y });
+	}
 	void rotate(float _angle) {
 		tangle += _angle;
 	}

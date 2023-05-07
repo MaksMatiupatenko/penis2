@@ -19,6 +19,7 @@
 #include "RIGIDBODY.hpp"
 
 #include "COLLIDER.hpp"
+#include "DRAWHUI.h"
 
 LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -26,7 +27,7 @@ LRESULT CALLBACK MainWinProc(HWND hWindow, UINT message, WPARAM wParam, LPARAM l
 static const PIXELFORMATDESCRIPTOR pfd =
 {
     /* nSize          */ sizeof(PIXELFORMATDESCRIPTOR),
-    /* nVersion       */ 1,
+    /* nVersion       */ 3,
     /* dwFlags        */ PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
     /* iPixelType     */ PFD_TYPE_RGBA,
     /* cColorBits     */ 32,
@@ -79,11 +80,10 @@ void destructContext(HWND hWindow, HGLRC gl) {
     wglDeleteContext(gl);
 }
 
-std::vector <Drawable*> drawables;
-std::vector <PolygonObstacle> obstacles;
-
 PLAYER player;
 RigidBody penis;
+
+
 
 HGLRC context;
 
@@ -120,9 +120,11 @@ void processAsyncInput() {
     }
     if (GetAsyncKeyState('Q')) {
         camera.rotate(timeDiff);
+        penis.rotate(timeDiff);
     }
     if (GetAsyncKeyState('E')) {
         camera.rotate(-timeDiff);
+        penis.rotate(-timeDiff);
     }
     if (GetAsyncKeyState('Z')) {
         camera.scale(exp(timeDiff));
@@ -130,6 +132,9 @@ void processAsyncInput() {
     if (GetAsyncKeyState('X')) {
         camera.scale(exp(-timeDiff));
     }
+
+
+
     vec2f pos0 = player.getPos();
     vec2f mw = { 0, 0 };
     mw = { 0, 0 };
@@ -145,86 +150,13 @@ void processAsyncInput() {
     if (GetAsyncKeyState(VK_RIGHT)) {
         mw.x += 1;
     }
-    penis.velocity += normalize(mw) * timeDiff * 0.05f;
+    //mw = mw * timeDiff;
+    penis.velocity += vec2f(penis.getMat() * vec3f(normalize(mw) * timeDiff, 0));
     if (len(penis.velocity) > 4.f) {
         penis.velocity = normalize(penis.velocity) * 4.f;
     }
-    /*
-    player.move(mw.x, mw.y);
-    bool flag = false;
-    for (const auto& obstacle : obstacles) {
-        if (player.collide(obstacle)) {
-            flag = true;
-            break;
-        }
-    }
     
-    if (flag) {
-        float l = 0, r = 1;
-        for (int iter = 0; iter < 30; ++iter) {
-            float m = (l + r) / 2;
-            player.setPos(pos0);
-            player.move(mw * m);
-
-            flag = false;
-            for (const auto& obstacle : obstacles) {
-                if (player.collide(obstacle)) {
-                    flag = true;
-                    break;
-                }
-            }
-
-            if (flag) r = m;
-            else l = m;
-        }
-        
-        player.setPos(pos0);
-        player.move(mw * r);
-
-        PolygonObstacle coll({}, {});
-        bool ff = false;
-        for (const auto& obstacle : obstacles) {
-            if (player.collide(obstacle)) {
-                coll = obstacle;
-                ff = true;
-                break;
-            }
-        }
-        
-        player.setPos(pos0);
-        player.move(mw * l);
-        pos0 = player.getPos();
-
-        if (false && ff) {
-            vec2f nm = player.getCollNormal(coll);
-
-            mw = mw * (1 - l);
-            mw = mw - nm * dt(nm, mw);
-
-            l = 1; r = 1;
-            for (int iter = 0; iter < 30; ++iter) {
-                float m = (l + r) / 2;
-                player.setPos(pos0);
-                player.move(mw * m);
-
-                flag = false;
-                for (const auto& obstacle : obstacles) {
-                    if (player.collide(obstacle)) {
-                        flag = true;
-                        break;
-                    }
-                }
-
-                if (flag) r = m;
-                else l = m;
-            }
-
-            player.setPos(pos0);
-            player.move(mw * l);
-        }
-    }
-    */
-    //camera.setPos(player.getPos());
+    camera.setPos(penis.getPos());
 }
 
 void updateConditions();
@@ -313,19 +245,59 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 
     penis.setMass(1);
     penis.restitution = 1;
-    penis.setDrawModel(new Drawable(makeCircle(GLRED, 0.1f)));
-    penis.setCollider(new CircleCollider({ {0, 0}, 0.1f }));
+    penis.setDrawModel(new Drawable(makeCircle(GLRED, 0.1f, 3)));
+    penis.setCollider(new PolygonCollider(getCircleModel(0.1, 3)));
 
     bodies.push_back(&penis);
 
     bodies.push_back(
         new RigidBody(
             1, 1, 
-            new CircleCollider({ { 0, 0 }, 0.1f }),
+            new PolygonCollider(getCircleModel(0.1)),
             new Drawable(makeCircle(GLBLUE, 0.1f))
         )
     );
     bodies.back()->setPos(0.5f, 0.5f);
+    bodies.push_back(
+        new RigidBody(
+            1, 1,
+            new PolygonCollider(getCircleModel(0.1)),
+            new Drawable(makeCircle(GLBLUE, 0.1f))
+        )
+    );
+    bodies.back()->setPos(0.1f, 0.5f);
+    bodies.push_back(
+        new RigidBody(
+            1, 1,
+            new PolygonCollider(getCircleModel(0.1)),
+            new Drawable(makeCircle(GLBLUE, 0.1f))
+        )
+    );
+    bodies.back()->setPos(0.5f, -0.5f);
+    bodies.push_back(
+        new RigidBody(
+            1, 1,
+            new PolygonCollider(getCircleModel(0.1)),
+            new Drawable(makeCircle(GLBLUE, 0.1f))
+        )
+    );
+    bodies.back()->setPos(0.7f, 0.5f);
+    bodies.push_back(
+        new RigidBody(
+            1, 1,
+            new PolygonCollider(getCircleModel(0.1)),
+            new Drawable(makeCircle(GLBLUE, 0.1f))
+        )
+    );
+    bodies.back()->setPos(0.3f, -0.1f);
+    bodies.push_back(
+        new RigidBody(
+            1, 1,
+            new PolygonCollider(getCircleModel(0.1)),
+            new Drawable(makeCircle(GLBLUE, 0.1f))
+        )
+    );
+    bodies.back()->setPos(0.3f, -0.9f);
 
     ShowWindow(hWindow, nCommandShow);
     UpdateWindow(hWindow);
@@ -352,63 +324,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 }
 
 void updateFrame() {
-    /*obstacles.clear();
-    obstacles.emplace_back(Polygonf{
-        {0.1, 0.1},
-        {0.3, 0.1},
-        {0, 0.5}
-    }, GLLIGHTGREY);
-    obstacles.emplace_back(Polygonf{
-        {-0.1, -0.1},
-        {-0.3, -0.1},
-        {0, -0.5}
-        }, GLLIGHTGREY);
-    obstacles.emplace_back(Polygonf{
-        {0.5, -0.3},
-        {0.8, -0.3},
-        {0.7, -0.2},
-        {0.8, -0.1},
-        {0.5, -0.1}
-        }, GLLIGHTGREY);
-    const FLOAT MAXABS = 1.f * wWidth / wHeight;
-    const FLOAT WIDTH = 0.03f;
-    obstacles.emplace_back(Polygonf{
-        {-MAXABS, -1},
-        {MAXABS, -1},
-        {MAXABS, -1 + WIDTH},
-        {-MAXABS, -1 + WIDTH}
-        }, GLLIGHTGREY);
-    obstacles.emplace_back(Polygonf{
-        {-MAXABS, 1},
-        {-MAXABS, 1 - WIDTH},
-        {MAXABS, 1 - WIDTH},
-        {MAXABS, 1}
-        }, GLLIGHTGREY);
-    obstacles.emplace_back(Polygonf{
-        {-MAXABS, -1},
-        {-MAXABS + WIDTH, -1},
-        {-MAXABS + WIDTH, 1},
-        {-MAXABS, 1}
-        }, GLLIGHTGREY);
-    obstacles.emplace_back(Polygonf{
-        {MAXABS - WIDTH, -1},
-        {MAXABS, -1},
-        {MAXABS, 1},
-        {MAXABS - WIDTH, 1}
-        }, GLLIGHTGREY);
+    drawhui.clear();
 
-    for (auto i : drawables) {
-        delete i;
-    }
-    drawables.clear();
-    for (auto obstacle : obstacles) {
-        drawables.push_back(new PolygonObstacle(obstacle));
-    }
-
-    shadowDrawer.clear();
-    for (const auto& obs : drawables) {
-        shadowDrawer.push(player.getPos(), (Drawable*) obs);
-    }*/
     for (size_t i = 0; i < bodies.size(); ++i) {
         for (size_t j = i + 1; j < bodies.size(); ++j) {
             resolveCollision(*bodies[i], *bodies[j]);
@@ -416,8 +333,14 @@ void updateFrame() {
     }
     for (size_t i = 0; i < bodies.size(); ++i) {
         //debug << len(bodies[i]->velocity) << std::endl;
-        bodies[i]->move(bodies[i]->velocity);
-        bodies[i]->velocity *= 0.99f;
+        bodies[i]->update(timeDiff);
+    }
+
+    shadowDrawer.clear();
+    for (const auto& obs : bodies) {
+        if (obs != &penis) {
+            shadowDrawer.push(penis.getPos(), obs);
+        }
     }
 }
 
@@ -432,15 +355,15 @@ void yaSosuPenis(HWND hWindow) {
         {-0.5, 0.1}
                     }, GLLIGHTBLUE).draw(camera);
     shadowDrawer.draw(camera);
-    for (auto ptr : drawables) {
-        ptr->draw(camera);
-    }
 
     for (auto i : bodies) {
         i->draw(camera);
     }
     //penis.draw(camera);
-    //player.draw(camera);
+    player.draw(camera);
+    for (auto i : drawhui) {
+        i.draw(camera);
+    }
 
     auto hdc = GetDC(hWindow);
     SwapBuffers(hdc);

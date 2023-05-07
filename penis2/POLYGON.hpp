@@ -38,6 +38,10 @@ public:
         return BASE::operator[]((pos % (int)BASE::size() + (int)BASE::size()) % (int)BASE::size());
     }
 
+    void push(CTREF x, CTREF y) {
+        BASE::emplace_back(x, y);
+    }
+
     static bool isConvex(POLYGON polygon) {
         unsigned char flag = 0;
         for (size_t i = 0; i < polygon.size(); ++i) {

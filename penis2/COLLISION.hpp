@@ -5,5 +5,5 @@
 struct Collision {
 	bool exists = false;
 	vec2f normal{};
-	float penDepth{};
+	vec2f point;
 };
