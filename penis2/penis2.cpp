@@ -395,6 +395,8 @@ void updateFrame() {
             shadowDrawer.push(penis.getPos(), obs);
         }
     }
+
+    gravity *= exp(timeDiff * 0.01);
 }
 
 void yaSosuPenis(HWND hWindow) {

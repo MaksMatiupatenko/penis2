@@ -3,6 +3,7 @@
 #include "COLLIDER.hpp"
 #include "DRAWABLE.hpp"
 #include "DRAWHUI.h"
+#include "GRAVITY.h"
 
 struct RigidBody : public Transform {
 private:
@@ -14,7 +15,6 @@ public:
 	vec2f velocity{};
 	float restitution{};
 	Collider* collider{};
-	vec2f gravity = { 0, -9.81f * 0.02};
 	
 	RigidBody() = default;
 
