@@ -372,7 +372,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     MSG msg;
     while (windowOpen) {
         timeDiff = getTimeDiff(prtime);
-        if (timeDiff >= 1/ MAX_FPS) {
+        if (timeDiff >= 1 / MAX_FPS) {
             setTime(prtime);
             updateFrame();
             processAsyncInput();
@@ -391,11 +391,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 void updateFrame() {
     drawhui.clear();
 
-    for (size_t i = 0; i < bodies.size(); ++i) {
-        for (size_t j = i + 1; j < bodies.size(); ++j) {
-            resolveCollision(*bodies[i], *bodies[j]);
+    for (int iter = 0; iter < 1; ++iter) {
+        for (size_t i = 0; i < bodies.size(); ++i) {
+            for (size_t j = i + 1; j < bodies.size(); ++j) {
+                resolveCollision(*bodies[i], *bodies[j]);
+            }
         }
     }
+    
     for (size_t i = 0; i < bodies.size(); ++i) {
         //debug << len(bodies[i]->velocity) << std::endl;
         bodies[i]->update(timeDiff);

@@ -94,21 +94,27 @@ void resolveCollision(RigidBody& A, RigidBody& B) {
 	if (!A.getInvMass() && !B.getInvMass()) {
 		return;
 	}
-	auto [collide, normal, pos] = A.collider->get(B.collider);
+	auto [collide, normal, pos, depth] = A.collider->get(B.collider);
 	if (!collide) {
 		return;
 	}
+
+	auto m1 = A.getInvMass();
+	auto m2 = B.getInvMass();
+	const float hui = 0.9;
+	A.move(normal * hui * depth * m1 / (m1 + m2));
+	B.move(-normal * hui * depth * m2 / (m1 + m2));
+
 	vec2f rv = -B.velocity + A.velocity;
 	float velAlongNormal = dt(rv, normal);
-	if (velAlongNormal > 0) {
-		return;
+	if (velAlongNormal < 0) {
+		float e = min(A.restitution, B.restitution);
+		float j = -(1 + e) * velAlongNormal;
+		j /= A.getInvMass() + B.getInvMass();
+		vec2f impulse = normal * j;
+		A.velocity += impulse * A.getInvMass();
+		B.velocity -= impulse * B.getInvMass();
 	}
-	float e = min(A.restitution, B.restitution);
-	float j = -(1 + e) * velAlongNormal;
-	j /= A.getInvMass() + B.getInvMass();
-	vec2f impulse = normal * j;
-	A.velocity += impulse * A.getInvMass();
-	B.velocity -= impulse * B.getInvMass();
 
 	Polygonf strelka;
 	strelka.push(0.1, -1);

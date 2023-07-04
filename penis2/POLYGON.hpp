@@ -2,7 +2,9 @@
 #define __POLYGONHPP__
 
 #include "GEOMSTRUCTS.hpp"
+#include "MATH.h"
 #include <vector>
+#include <algorithm>
 
 template <typename FLOATTYPE>
 class __POLYGON : public std::vector<vec2<FLOATTYPE>> {
@@ -112,8 +114,94 @@ public:
         }
         return false;
     }
+
+    void normalizeOrder() {
+        if (BASE::empty()) return;
+
+        std::sort(BASE::begin(), BASE::end(), [&](CVREF a, CVREF b) {
+            if (a.x == b.x) return a.y < b.y;
+            return a.x < b.x;
+             });
+        std::sort(BASE::begin() + 1, BASE::end(), [&](CVREF a, CVREF b) {
+            return cross(a - get(0), b - get(0)) > 0;
+             });
+    }
 };
 
+__POLYGON <float> convexIntersecton(__POLYGON <float>& p1, __POLYGON <float>& p2) {
+    std::vector <std::pair <vec2f, vec2f>> pln;
+    for (int i = 0; i < p1.size(); ++i) {
+        vec2f norm = p1.get(i + 1) - p1.get(i);
+        pln.push_back({ p1.get(i), normalize(norm) });
+    }
+    for (int i = 0; i < p2.size(); ++i) {
+        vec2f norm = p2.get(i + 1) - p2.get(i);
+        pln.push_back({ p2.get(i), normalize(norm) });
+    }
+
+    const float eps = 1e-4;
+
+    auto intersect = [&](const std::pair <vec2f, vec2f>& a, const std::pair <vec2f, vec2f>& b) {
+        return a.first + a.second * dot(a.second, b.second) * cross(a.second, a.first - b.first) / cross(a.second, b.second);
+    };
+
+    std::sort(pln.begin(), pln.end(), [&](const std::pair <vec2f, vec2f>& a, const std::pair <vec2f, vec2f>& b) {
+        return atan2(a.second.y, a.second.x) < atan2(b.second.y, b.second.x);
+              });
+
+
+    std::vector <int> st;
+    for (int iter = 0; iter < 2; ++iter) {
+        for (int i = 0; i < pln.size(); ++i) {
+            auto ppl = pln[i];
+
+            bool flag = true;
+            while (!st.empty()) {
+                if (cross(pln[st.back()].second, ppl.second) <= 0) {
+                    return {};
+                }
+                if (lenght(pln[st.back()].second - ppl.second) < eps / 2) {
+                    if (cross(ppl.second, pln[st.back()].first - ppl.first) > 0) {
+                        flag = false;
+                        break;
+                    }
+                    else {
+                        st.pop_back();
+                    }
+                }
+                else if (st.size() >= 2 && cross(pln[st.back()].second, intersect(pln[st[st.size() - 2]], ppl) - pln[st.back()].first) >= 0) {
+                    st.pop_back();
+                }
+                else {
+                    break;
+                }
+            }
+
+            if (flag) {
+                st.push_back(i);
+            }
+        }
+    }
+
+    std::vector <int> ind(pln.size(), -1);
+    for (int i = 0; i < st.size(); ++i) {
+        if (ind[st[i]] != -1) {
+            std::vector <int> v(st.begin() + ind[st[i]], st.begin() + i);
+            __POLYGON <float> ans;
+            for (int j = 0; j < v.size(); ++j) {
+                ans.push_back(intersect(pln[v[j]], pln[v[(j + 1) % v.size()]]));
+            }
+            return ans;
+        }
+        else {
+            ind[st[i]] = i;
+        }
+    }
+
+    return {};
+}
+
+/// и какого хуя это в класс завернуто блять?
 template <typename FLOATTYPE>
 class TangentsFinder {
 private:
@@ -128,11 +216,9 @@ public:
     /// <param name="point"></param>
     /// <param name="polygon"></param>
     /// <returns></returns>
-    static std::pair<vec_t, vec_t> getPointToConvexPolygonTangents(
+    static std::pair <int, int> getPointToConvexPolygonTangents(
         const vec_t& point,
         const POLYGON& polygon) {
-
-        throw emptyRealisation;
 
         UINT lg = 0;
         while ((1 << lg) < polygon.size()) {
@@ -141,35 +227,79 @@ public:
 
         int l1 = 0;
         for (int k = lg; k >= 0; --k) {
-            vec_t v1 = polygon[l1 - (1 << k)] - point;
-            vec_t v2 = polygon[l1] - point;
-            vec_t v3 = polygon[l1 + (1 << k)] - point;
+            vec_t v1 = polygon.get(l1 - (1 << k)) - point;
+            vec_t v2 = polygon.get(l1) - point;
+            vec_t v3 = polygon.get(l1 + (1 << k)) - point;
             if (cross(v1, v2) < 0 && cross(v1, v3) < 0) {
                 l1 = l1 - (1 << k);
             }
             else if (cross(v3, v2) < 0 && cross(v3, v1) < 0) {
                 l1 = l1 + (1 << k);
             }
-            l1 %= polygon.size();
+            l1 = (l1 + polygon.size() * 228) % polygon.size();
         }
 
         int l2 = 0;
         for (int k = lg; k >= 0; --k) {
-            vec_t v1 = polygon[l2 - (1 << k)] - point;
-            vec_t v2 = polygon[l2] - point;
-            vec_t v3 = polygon[l2 + (1 << k)] - point;
+            vec_t v1 = polygon.get(l2 - (1 << k)) - point;
+            vec_t v2 = polygon.get(l2) - point;
+            vec_t v3 = polygon.get(l2 + (1 << k)) - point;
             if (cross(v1, v2) > 0 && cross(v1, v3) > 0) {
                 l2 = l2 - (1 << k);
             }
             else if (cross(v3, v2) > 0 && cross(v3, v1) > 0) {
                 l2 = l2 + (1 << k);
             }
-            l2 %= polygon.size();
+            l2 = (l2 + polygon.size() * 228) % polygon.size();
+        }
+
+        return { l1, l2 };
+    }
+
+    /// сука для выпуклых только работает
+    static std::pair <int, int> getParTangents(
+        const vec_t& dir,
+        const POLYGON& polygon) {
+
+        UINT lg = 0;
+        while ((1 << lg) < polygon.size()) {
+            ++lg;
+        }
+
+        int l1 = 0;
+        for (int k = lg; k >= 0; --k) {
+            vec_t v1 = polygon.get(l1 - (1 << k));
+            vec_t v2 = polygon.get(l1);
+            vec_t v3 = polygon.get(l1 + (1 << k));
+            if (cross(dir, v1) < cross(dir, v2) && cross(dir, v1) < cross(dir, v3)) {
+                l1 = l1 - (1 << k);
+            }
+            else if (cross(dir, v3) < cross(dir, v2) && cross(dir, v3) < cross(dir, v1)) {
+                l1 = l1 + (1 << k);
+            }
+            l1 = (l1 + polygon.size() * 228) % polygon.size();
+        }
+
+        int l2 = 0;
+        for (int k = lg; k >= 0; --k) {
+            vec_t v1 = polygon.get(l2 - (1 << k));
+            vec_t v2 = polygon.get(l2);
+            vec_t v3 = polygon.get(l2 + (1 << k));
+            if (cross(dir, v1) > cross(dir, v2) && cross(dir, v1) > cross(dir, v3)) {
+                l2 = l2 - (1 << k);
+            }
+            else if (cross(dir, v3) > cross(dir, v2) && cross(dir, v3) > cross(dir, v1)) {
+                l2 = l2 + (1 << k);
+            }
+            l2 = (l2 + polygon.size() * 228) % polygon.size();
         }
 
         return { l1, l2 };
     }
 };
+std::pair <int, int> getParTangents(const vec2f& dir, const __POLYGON <float>& poly) {
+    return TangentsFinder <float>::getParTangents(dir, poly);
+}
 
 template <typename FLOATTYPE>
 class PolygonTriangulator {
@@ -225,6 +355,27 @@ public:
     }
 };
 
+vec2f getCenter(const __POLYGON <float>& p) {
+    /*for (auto pnt : p) {
+        debug << pnt.x << ' ' << pnt.y << '\n';
+    }
+    debug << "-----------------------------------------\n";*/
 
+    if (p.empty()) return vec2f(1337, 1488);
+    if (p.size() == 1) return p[0];
+    if (p.size() == 2) return (p[0] + p[1]) / 2;
+
+    
+
+    auto tr = PolygonTriangulator <float>::get(p);
+    float sm = 0;
+    vec2f cent = { 0, 0 };
+    for (const auto& [a, b, c] : tr) {
+        float ar = abs(cross(b - a, c - a));
+        sm += ar;
+        cent += (a + b + c) / 3 * ar;
+    }
+    return cent / sm;
+}
 
 #endif

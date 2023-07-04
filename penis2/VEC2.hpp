@@ -110,7 +110,15 @@ public:
 		return vec1.x * vec2.x + vec1.y * vec2.y;
 	}
 
+	friend TYPE dot(CREF vec1, CREF vec2) {
+		return vec1.x * vec2.x + vec1.y * vec2.y;
+	}
+
 	friend TYPE crss(CREF vec1, CREF vec2) {
+		return vec1.x * vec2.y - vec1.y * vec2.x;
+	}
+
+	friend TYPE cross(CREF vec1, CREF vec2) {
 		return vec1.x * vec2.y - vec1.y * vec2.x;
 	}
 
@@ -119,6 +127,10 @@ public:
 	}
 
 	friend TYPE len(CREF vec1) {
+		return sqrt(vec1.lensq());
+	}
+
+	friend TYPE lenght(CREF vec1) {
 		return sqrt(vec1.lensq());
 	}
 
