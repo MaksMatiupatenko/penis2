@@ -7,7 +7,8 @@
 
 struct PolygonCollider;
 
-struct Collider {
+class Collider {
+public:
 	Transform* base = nullptr;
 
 	virtual Collision get(const Collider* other) const = 0;
@@ -15,7 +16,12 @@ struct Collider {
 	virtual Collision get(const PolygonCollider* other) const = 0;
 };
 
-struct PolygonCollider : public Collider {
+class PolygonCollider : public Collider {
+private:
+	float rad;
+	vec2f center;
+
+public:
 	Polygonf poly;
 
 	Polygonf getAbsPoly() const {
@@ -31,6 +37,11 @@ struct PolygonCollider : public Collider {
 	PolygonCollider(const Polygonf& circle1) {
 		poly = circle1;
 		poly.normalizeOrder();
+
+		center = getCenter(poly);
+		for (auto p : poly) {
+			rad = max(rad, lenght(p - center));
+		}
 	}
 
 	Collision get(const Collider* other) const override {
@@ -38,6 +49,10 @@ struct PolygonCollider : public Collider {
 	}
 
 	Collision get(const PolygonCollider* other) const override {
+		if (lenght(*base * center - *other->base * other->center) > rad + other->rad) {
+			return Collision{};
+		}
+
 		auto poly1 = getAbsPoly();
 		auto opoly1 = other->getAbsPoly();
 

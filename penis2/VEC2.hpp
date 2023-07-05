@@ -134,6 +134,10 @@ public:
 		return sqrt(vec1.lensq());
 	}
 
+	friend TYPE length(CREF vec1) {
+		return sqrt(vec1.lensq());
+	}
+
 	friend TYPE dstsq(CREF vec1, CREF vec2) {
 		return VEC(vec1, vec2).lensq();
 	}

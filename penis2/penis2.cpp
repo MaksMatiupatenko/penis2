@@ -259,54 +259,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 
     bodies.push_back(&penis);
 
-    bodies.push_back(
-        new RigidBody(
-            1, 1, 
-            new PolygonCollider(getCircleModel(0.1)),
-            new Drawable(makeCircle(GLBLUE, 0.1f))
-        )
-    );
-    bodies.back()->setPos(0.5f, 0.5f);
-    bodies.push_back(
-        new RigidBody(
-            1, 1,
-            new PolygonCollider(getCircleModel(0.1)),
-            new Drawable(makeCircle(GLBLUE, 0.1f))
-        )
-    );
-    bodies.back()->setPos(0.1f, 0.5f);
-    bodies.push_back(
-        new RigidBody(
-            1, 1,
-            new PolygonCollider(getCircleModel(0.1)),
-            new Drawable(makeCircle(GLBLUE, 0.1f))
-        )
-    );
-    bodies.back()->setPos(0.5f, -0.5f);
-    bodies.push_back(
-        new RigidBody(
-            1, 1,
-            new PolygonCollider(getCircleModel(0.1)),
-            new Drawable(makeCircle(GLBLUE, 0.1f))
-        )
-    );
-    bodies.back()->setPos(0.7f, 0.5f);
-    bodies.push_back(
-        new RigidBody(
-            1, 1,
-            new PolygonCollider(getCircleModel(0.1)),
-            new Drawable(makeCircle(GLBLUE, 0.1f))
-        )
-    );
-    bodies.back()->setPos(0.3f, -0.1f);
-    bodies.push_back(
-        new RigidBody(
-            1, 1,
-            new PolygonCollider(getCircleModel(0.1)),
-            new Drawable(makeCircle(GLBLUE, 0.1f))
-        )
-    );
-    bodies.back()->setPos(0.3f, -0.8f);
+    for (int i = 0; i < 100; ++i) {
+        float r = rnd01() * 0.02 + 0.01;
+        bodies.push_back(
+            new RigidBody(
+                r * r, 0.6,
+                new PolygonCollider(getCircleModel(r, 300 * r)),
+                new Drawable(makeCircle(GLBLUE, r))
+            )
+        );
+        bodies.back()->setPos(rnd01() - 0.5, rnd01() - 0.5);
+    }
 
     Polygonf eldak = 
     { { -1, -1 },
@@ -391,7 +354,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 void updateFrame() {
     drawhui.clear();
 
-    for (int iter = 0; iter < 1; ++iter) {
+    for (int iter = 0; iter < 4; ++iter) {
         for (size_t i = 0; i < bodies.size(); ++i) {
             for (size_t j = i + 1; j < bodies.size(); ++j) {
                 resolveCollision(*bodies[i], *bodies[j]);

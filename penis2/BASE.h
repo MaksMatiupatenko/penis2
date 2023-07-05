@@ -3,6 +3,8 @@
 
 #include "GLLOADER.hpp"
 #include <windowsx.h>
+#include <random>
+#include <chrono>
 
 std::ofstream debug("debug.txt");
 std::ofstream errLog("runtimeLog.txt");
@@ -22,5 +24,12 @@ typedef int INT;
 typedef long long INT64;
 typedef double FLOAT64;
 typedef unsigned int UINT;
+
+#undef max
+std::mt19937 rnd(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+double rnd01() {
+	return (double)rnd() / rnd.max();
+}
+#define max(a, b) (((a) > (b)) ? (a) : (b))
 
 #endif

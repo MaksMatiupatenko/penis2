@@ -129,39 +129,37 @@ public:
 };
 
 __POLYGON <float> convexIntersecton(__POLYGON <float>& p1, __POLYGON <float>& p2) {
-    std::vector <std::pair <vec2f, vec2f>> pln;
+    std::vector <std::pair <vec2f, vec2f>> pls;
     for (int i = 0; i < p1.size(); ++i) {
         vec2f norm = p1.get(i + 1) - p1.get(i);
-        pln.push_back({ p1.get(i), normalize(norm) });
+        pls.push_back({ p1.get(i), normalize(norm) });
     }
     for (int i = 0; i < p2.size(); ++i) {
         vec2f norm = p2.get(i + 1) - p2.get(i);
-        pln.push_back({ p2.get(i), normalize(norm) });
+        pls.push_back({ p2.get(i), normalize(norm) });
     }
 
-    const float eps = 1e-4;
+    std::sort(pls.begin(), pls.end(), [&](const std::pair <vec2f, vec2f>& a, const std::pair <vec2f, vec2f>& b) {
+        if (a.second.y > 0 && b.second.y < 0) return true;
+        if (a.second.y < 0 && b.second.y > 0) return false;
+        if (a.second.y == 0 && b.second.y == 0) return a.second.x > b.second.x;
+        return cross(a.second, b.second) > 0;
+         });
 
-    auto intersect = [&](const std::pair <vec2f, vec2f>& a, const std::pair <vec2f, vec2f>& b) {
-        return a.first + a.second * dot(a.second, b.second) * cross(a.second, a.first - b.first) / cross(a.second, b.second);
+    const double eps = 1e-5;
+
+    auto inter = [&](const std::pair <vec2f, vec2f>& a, const std::pair <vec2f, vec2f>& b) {
+        return a.first + a.second * (dot(a.second, b.first - a.first) + dot(a.second, b.second) * cross(a.second, b.first - a.first) / cross(b.second, a.second));
     };
-
-    std::sort(pln.begin(), pln.end(), [&](const std::pair <vec2f, vec2f>& a, const std::pair <vec2f, vec2f>& b) {
-        return atan2(a.second.y, a.second.x) < atan2(b.second.y, b.second.x);
-              });
-
 
     std::vector <int> st;
     for (int iter = 0; iter < 2; ++iter) {
-        for (int i = 0; i < pln.size(); ++i) {
-            auto ppl = pln[i];
-
+        for (int i = 0; i < pls.size(); ++i) {
+            auto [p, v] = pls[i];
             bool flag = true;
             while (!st.empty()) {
-                if (cross(pln[st.back()].second, ppl.second) <= 0) {
-                    return {};
-                }
-                if (lenght(pln[st.back()].second - ppl.second) < eps / 2) {
-                    if (cross(ppl.second, pln[st.back()].first - ppl.first) > 0) {
+                if (length(v - pls[st.back()].second) < eps) {
+                    if (cross(v, pls[st.back()].first - p) > 0) {
                         flag = false;
                         break;
                     }
@@ -169,27 +167,29 @@ __POLYGON <float> convexIntersecton(__POLYGON <float>& p1, __POLYGON <float>& p2
                         st.pop_back();
                     }
                 }
-                else if (st.size() >= 2 && cross(pln[st.back()].second, intersect(pln[st[st.size() - 2]], ppl) - pln[st.back()].first) >= 0) {
+                else if (cross(pls[st.back()].second, v) < eps / 2) {
+                    return {};
+                }
+                else if (st.size() >= 2 && cross(pls[st[st.size() - 2]].second, inter(pls[st.back()], { p, v }) - pls[st[st.size() - 2]].first) < eps / 2) {
                     st.pop_back();
                 }
                 else {
                     break;
                 }
             }
-
             if (flag) {
                 st.push_back(i);
             }
         }
     }
 
-    std::vector <int> ind(pln.size(), -1);
+    std::vector <int> ind(pls.size(), -1);
     for (int i = 0; i < st.size(); ++i) {
         if (ind[st[i]] != -1) {
             std::vector <int> v(st.begin() + ind[st[i]], st.begin() + i);
             __POLYGON <float> ans;
             for (int j = 0; j < v.size(); ++j) {
-                ans.push_back(intersect(pln[v[j]], pln[v[(j + 1) % v.size()]]));
+                ans.push_back(inter(pls[v[j]], pls[v[(j + 1) % v.size()]]));
             }
             return ans;
         }
@@ -230,10 +230,10 @@ public:
             vec_t v1 = polygon.get(l1 - (1 << k)) - point;
             vec_t v2 = polygon.get(l1) - point;
             vec_t v3 = polygon.get(l1 + (1 << k)) - point;
-            if (cross(v1, v2) < 0 && cross(v1, v3) < 0) {
+            if (cross(v1, v2) <= 0 && cross(v1, v3) <= 0) {
                 l1 = l1 - (1 << k);
             }
-            else if (cross(v3, v2) < 0 && cross(v3, v1) < 0) {
+            else if (cross(v3, v2) <= 0 && cross(v3, v1) <= 0) {
                 l1 = l1 + (1 << k);
             }
             l1 = (l1 + polygon.size() * 228) % polygon.size();
@@ -244,10 +244,10 @@ public:
             vec_t v1 = polygon.get(l2 - (1 << k)) - point;
             vec_t v2 = polygon.get(l2) - point;
             vec_t v3 = polygon.get(l2 + (1 << k)) - point;
-            if (cross(v1, v2) > 0 && cross(v1, v3) > 0) {
+            if (cross(v1, v2) >= 0 && cross(v1, v3) >= 0) {
                 l2 = l2 - (1 << k);
             }
-            else if (cross(v3, v2) > 0 && cross(v3, v1) > 0) {
+            else if (cross(v3, v2) >= 0 && cross(v3, v1) >= 0) {
                 l2 = l2 + (1 << k);
             }
             l2 = (l2 + polygon.size() * 228) % polygon.size();
@@ -271,10 +271,10 @@ public:
             vec_t v1 = polygon.get(l1 - (1 << k));
             vec_t v2 = polygon.get(l1);
             vec_t v3 = polygon.get(l1 + (1 << k));
-            if (cross(dir, v1) < cross(dir, v2) && cross(dir, v1) < cross(dir, v3)) {
+            if (cross(dir, v1) <= cross(dir, v2) && cross(dir, v1) <= cross(dir, v3)) {
                 l1 = l1 - (1 << k);
             }
-            else if (cross(dir, v3) < cross(dir, v2) && cross(dir, v3) < cross(dir, v1)) {
+            else if (cross(dir, v3) <= cross(dir, v2) && cross(dir, v3) <= cross(dir, v1)) {
                 l1 = l1 + (1 << k);
             }
             l1 = (l1 + polygon.size() * 228) % polygon.size();
@@ -285,14 +285,15 @@ public:
             vec_t v1 = polygon.get(l2 - (1 << k));
             vec_t v2 = polygon.get(l2);
             vec_t v3 = polygon.get(l2 + (1 << k));
-            if (cross(dir, v1) > cross(dir, v2) && cross(dir, v1) > cross(dir, v3)) {
+            if (cross(dir, v1) >= cross(dir, v2) && cross(dir, v1) >= cross(dir, v3)) {
                 l2 = l2 - (1 << k);
             }
-            else if (cross(dir, v3) > cross(dir, v2) && cross(dir, v3) > cross(dir, v1)) {
+            else if (cross(dir, v3) >= cross(dir, v2) && cross(dir, v3) >= cross(dir, v1)) {
                 l2 = l2 + (1 << k);
             }
             l2 = (l2 + polygon.size() * 228) % polygon.size();
         }
+
 
         return { l1, l2 };
     }

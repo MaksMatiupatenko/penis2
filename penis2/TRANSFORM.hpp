@@ -18,6 +18,10 @@ public:
 		return translatem(tpos) * rotatem(tangle) * scalem(tsize);
 	}
 
+	vec2f operator*(const vec2f& vec) const {
+		return getMat() * vec;
+	}
+
 	vec2f getPos() const {
 		return tpos;
 	}

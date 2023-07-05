@@ -131,5 +131,5 @@ void resolveCollision(RigidBody& A, RigidBody& B) {
 	dr.setAngle(atan2(-normal.x, normal.y));
 
 
-	drawhui.push_back(dr);
+	//drawhui.push_back(dr);
 }
