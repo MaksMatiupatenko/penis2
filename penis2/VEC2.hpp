@@ -147,7 +147,7 @@ public:
 	}
 
 	friend VEC normalize(CREF vec) {
-		if (!vec.lensq()) {
+		if (vec.lensq() == 0) {
 			return vec;
 		}
 		return vec / len(vec);

@@ -256,7 +256,6 @@ public:
         return { l1, l2 };
     }
 
-    /// сука для выпуклых только работает
     static std::pair <int, int> getParTangents(
         const vec_t& dir,
         const POLYGON& polygon) {
@@ -298,6 +297,7 @@ public:
         return { l1, l2 };
     }
 };
+/// сука для выпуклых только работает
 std::pair <int, int> getParTangents(const vec2f& dir, const __POLYGON <float>& poly) {
     return TangentsFinder <float>::getParTangents(dir, poly);
 }

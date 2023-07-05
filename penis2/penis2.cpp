@@ -252,7 +252,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     shadowDrawer.create(wWidth, wHeight);
     shadowDrawer.setShadowColor(vec4f(0, 0, 0, 0.5));
 
-    penis.setMass(1);
+    penis.setMass(0.1);
     penis.restitution = 1;
     penis.setDrawModel(new Drawable(makeCircle(GLRED, 0.1f, 3)));
     penis.setCollider(new PolygonCollider(getCircleModel(0.1, 3)));
@@ -260,12 +260,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
     bodies.push_back(&penis);
 
     for (int i = 0; i < 100; ++i) {
-        float r = rnd01() * 0.02 + 0.01;
+        int cnt = 3 + rnd() % 7;
+        float r = 0.01 + rnd01() * 0.02;
+        Polygonf eldak;
+        for (int j = 0; j < cnt; ++j) {
+            float angle = rnd01() * 2 * PI;
+            eldak.push(r * cos(angle), r * sin(angle));
+        }
+        eldak.normalizeOrder();
         bodies.push_back(
             new RigidBody(
                 r * r, 0.6,
-                new PolygonCollider(getCircleModel(r, 300 * r)),
-                new Drawable(makeCircle(GLBLUE, r))
+                new PolygonCollider(eldak),
+                new Drawable(eldak, GLBLUE)
             )
         );
         bodies.back()->setPos(rnd01() - 0.5, rnd01() - 0.5);

@@ -14,12 +14,14 @@ public:
 	virtual Collision get(const Collider* other) const = 0;
 
 	virtual Collision get(const PolygonCollider* other) const = 0;
+
+	virtual vec2f center() const = 0;
 };
 
 class PolygonCollider : public Collider {
 private:
 	float rad;
-	vec2f center;
+	vec2f _center;
 
 public:
 	Polygonf poly;
@@ -38,9 +40,9 @@ public:
 		poly = circle1;
 		poly.normalizeOrder();
 
-		center = getCenter(poly);
+		_center = getCenter(poly);
 		for (auto p : poly) {
-			rad = max(rad, lenght(p - center));
+			rad = max(rad, lenght(p - _center));
 		}
 	}
 
@@ -49,7 +51,7 @@ public:
 	}
 
 	Collision get(const PolygonCollider* other) const override {
-		if (lenght(*base * center - *other->base * other->center) > rad + other->rad) {
+		if (lenght(*base * _center - *other->base * other->_center) > rad + other->rad) {
 			return Collision{};
 		}
 
@@ -73,21 +75,23 @@ public:
 				auto [i1, i2] = getParTangents(dir, poly1);
 				p11 = cross(dir, poly1[i1]);
 				p12 = cross(dir, poly1[i2]);
+				if (p11 > p12) std::swap(p11, p12);
 			}
 			{
 				auto [i1, i2] = getParTangents(dir, opoly1);
 				p21 = cross(dir, opoly1[i1]);
 				p22 = cross(dir, opoly1[i2]);
+				if (p21 > p22) std::swap(p21, p22);
 			}
 
-			if (p11 > p22 || p21 > p12) return Collision{};
+			if (p11 >= p22 || p21 >= p12) return Collision{};
 			
-			if (norm == vec2f(0, 0) || p22 - p11 < aln) {
-				aln = p22 - p11;
+			if (norm == vec2f(0, 0) || abs(p22 - p11) < aln) {
+				aln = abs(p22 - p11);
 				norm = { -dir.y, dir.x };
 			}
-			if (norm == vec2f(0, 0) || p12 - p21 < aln) {
-				aln = p12 - p21;
+			if (norm == vec2f(0, 0) || abs(p12 - p21) < aln) {
+				aln = abs(p12 - p21);
 				norm = { dir.y, -dir.x };
 			}
 		}
@@ -102,6 +106,10 @@ public:
 		coll.point = getCenter(convexIntersecton(poly1, opoly1));
 		coll.depth = aln;
 		return coll;
+	}
+
+	vec2f center() const override {
+		return _center;
 	}
 };
 
