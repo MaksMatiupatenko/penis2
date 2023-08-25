@@ -58,17 +58,17 @@ public:
 		auto poly1 = getAbsPoly();
 		auto opoly1 = other->getAbsPoly();
 
-		std::vector <vec2f> dirs;
+		std::vector <vec2f> dirs1, dirs2;
 		for (int i = 0; i < poly1.size(); ++i) {
-			dirs.push_back(poly1.get(i + 1) - poly1.get(i));
+			dirs1.push_back(poly1.get(i + 1) - poly1.get(i));
 		}
 		for (int i = 0; i < opoly1.size(); ++i) {
-			dirs.push_back(opoly1.get(i + 1) - opoly1.get(i));
+			dirs2.push_back(-opoly1.get(i + 1) + opoly1.get(i));
 		}
 
 		float aln = 0;
 		vec2f norm = { 0, 0 };
-		for (auto dir : dirs) {
+		for (auto dir : dirs1) {
 			dir = normalize(dir);
 			float p11, p12, p21, p22;
 			{
@@ -84,8 +84,50 @@ public:
 				if (p21 > p22) std::swap(p21, p22);
 			}
 
-			if (p11 >= p22 || p21 >= p12) return Collision{};
+			if (p11 > p22 || p21 > p12) return Collision{};
+
+			if (p12 > p21) {
+				
+				if (len(norm) == 0 || p12 - p21 < aln) {
+					aln = p12 - p21;
+					norm = { dir.y, -dir.x };
+				}
+			}
+			else {
+				if (len(norm) == 0 || p22 - p11 < aln) {
+					aln = p22 - p11;
+					norm = { -dir.y, dir.x };
+				}
+			}
 			
+			/*if (norm == vec2f(0, 0) || abs(p22 - p11) < aln) {
+				aln = abs(p22 - p11);
+				norm = { -dir.y, dir.x };
+			}
+			if (norm == vec2f(0, 0) || abs(p12 - p21) < aln) {
+				aln = abs(p12 - p21);
+				norm = { dir.y, -dir.x };
+			}*/
+		}
+
+		for (auto dir : dirs2) {
+			dir = normalize(dir);
+			float p11, p12, p21, p22;
+			{
+				auto [i1, i2] = getParTangents(dir, poly1);
+				p11 = cross(dir, poly1[i1]);
+				p12 = cross(dir, poly1[i2]);
+				if (p11 > p12) std::swap(p11, p12);
+			}
+			{
+				auto [i1, i2] = getParTangents(dir, opoly1);
+				p21 = cross(dir, opoly1[i1]);
+				p22 = cross(dir, opoly1[i2]);
+				if (p21 > p22) std::swap(p21, p22);
+			}
+
+			if (p11 > p22 || p21 > p12) return Collision{};
+
 			if (norm == vec2f(0, 0) || abs(p22 - p11) < aln) {
 				aln = abs(p22 - p11);
 				norm = { -dir.y, dir.x };
@@ -107,6 +149,7 @@ public:
 		coll.depth = aln;
 		return coll;
 	}
+
 
 	vec2f center() const override {
 		return _center;

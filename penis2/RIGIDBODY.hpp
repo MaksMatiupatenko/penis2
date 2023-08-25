@@ -19,6 +19,8 @@ public:
 	float rotVel{};
 	/// умол€ю назови это поле самым ебанутымм английским словом которое знаешь
 	/// 7-8 бл€€€€€€€ть
+	/// 
+	/// сэр есть сэр пошел нахуй мудень
 	float restitution{};
 	Collider* collider{};
 	
@@ -146,6 +148,34 @@ void resolveCollision(RigidBody& A, RigidBody& B) {
 
 	auto m1 = A.getPointDirInvMass(posa, normal);
 	auto m2 = B.getPointDirInvMass(posb, -normal);
+
+
+	vec2f rv = -B.getPointVel(posb) + A.getPointVel(posa);
+
+	float velAlongNormal = dt(rv, normal);
+	if (velAlongNormal < 0) {
+		float e = min(A.restitution, B.restitution);
+		float j = -(1 + e) * velAlongNormal;
+		j /= m1 + m2;
+		vec2f impulse = normal * j;
+		A.velocity += impulse * m1;
+		B.velocity -= impulse * m2;
+		//A.addImpulse(posa, impulse);
+		//B.addImpulse(posb, -impulse);
+	}
+
+	const float percent = 0.25;
+	vec2f correction = normal * (depth / (m1 + m2) * percent);
+	A.move(correction * m1);
+	B.move(-correction * m2);
+
+
+	// ¬ќ“ —Ќ»«” ѕќЋЌјя ’”…Ќя
+	/*vec2f posa = A.getRMat() * pos;
+	vec2f posb = B.getRMat() * pos;
+
+	auto m1 = A.getPointDirInvMass(posa, normal);
+	auto m2 = B.getPointDirInvMass(posb, -normal);
 	const float hui = 0.9;
 
 	vec2f rv = -B.getPointVel(posb) + A.getPointVel(posa);
@@ -162,7 +192,29 @@ void resolveCollision(RigidBody& A, RigidBody& B) {
 	A.move(normal * hui * depth * m1 / (m1 + m2));
 	B.move(-normal * hui * depth * m2 / (m1 + m2));
 
-	Polygonf strelka;
+	int multiplier = 1;
+	if (A.getDrawable()->box().size() != 3) {
+		multiplier = -1;
+	}
+
+	if (normal * multiplier == vec2f{ 0, -1 }) {
+		debug << "pizdec\n";
+		if (multiplier == -1) {
+			debug << "sex\n";
+		}
+		auto* C = (multiplier == 1 ? &A : &B);
+		auto mat = C->getMat();
+		Polygonf poly = C->getDrawable()->box();
+		for (auto& i : poly) {
+			i = mat * i;
+		}
+		for (auto i : poly) {
+			debug << i.x << " " << i.y << "\n";
+		}
+		debug << "--------------------\n" << std::endl;
+	}*/
+
+	/*Polygonf strelka;
 	strelka.push(0.1, -1);
 	strelka.push(0.1, 0.6);
 	strelka.push(0.4, 0.6);
@@ -177,5 +229,5 @@ void resolveCollision(RigidBody& A, RigidBody& B) {
 	dr.setAngle(atan2(-normal.x, normal.y));
 
 
-	//drawhui.push_back(dr);
+	drawhui.push_back(dr);*/
 }
