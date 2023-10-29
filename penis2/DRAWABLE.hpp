@@ -24,6 +24,11 @@ private:
 
 	void setTrArr() {
 		trarr.clear();
+		if (hitbox.empty()) {
+			trarr.create();
+			arrset = TRUE;
+			return;
+		}
 		auto triangulation = PolygonTriangulator<FLOAT>::get(hitbox);
 		float miny = hitbox[0].y, maxy = miny;
 		float minx = hitbox[0].x, maxx = minx;

@@ -265,7 +265,12 @@ public:
             ++lg;
         }
 
-        int l1 = 0;
+        int l1 = 0, l2 = 0;
+        /*for (int i = 0; i < polygon.size(); ++i) {
+            if (cross(polygon.get(i), dir) < cross(polygon.get(l1), dir)) l1 = i;
+            if (cross(polygon.get(i), dir) > cross(polygon.get(l2), dir)) l2 = i;
+        }*/
+
         for (int k = lg; k >= 0; --k) {
             vec_t v1 = polygon.get(l1 - (1 << k));
             vec_t v2 = polygon.get(l1);
@@ -278,8 +283,6 @@ public:
             }
             l1 = (l1 + polygon.size() * 228) % polygon.size();
         }
-
-        int l2 = 0;
         for (int k = lg; k >= 0; --k) {
             vec_t v1 = polygon.get(l2 - (1 << k));
             vec_t v2 = polygon.get(l2);

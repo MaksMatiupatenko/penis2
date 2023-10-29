@@ -259,7 +259,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 
     bodies.push_back(&penis);
 
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 0; ++i) {
         int cnt = 3 + rnd() % 7;
         float r = 0.01 + rnd01() * 0.02;
         Polygonf eldak;
@@ -361,7 +361,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpCommandL
 void updateFrame() {
     drawhui.clear();
 
-    for (int iter = 0; iter < 4; ++iter) {
+    for (int iter = 0; iter < 1; ++iter) {
         for (size_t i = 0; i < bodies.size(); ++i) {
             for (size_t j = i + 1; j < bodies.size(); ++j) {
                 resolveCollision(*bodies[i], *bodies[j]);

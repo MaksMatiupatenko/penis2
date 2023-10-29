@@ -4,6 +4,7 @@
 #include "TRANSFORM.hpp"
 #include "COLLISION.hpp"
 #include "GEOMSTRUCTS.hpp"
+#include "DRAWHUI.h"
 
 struct PolygonCollider;
 
@@ -70,6 +71,7 @@ public:
 		vec2f norm = { 0, 0 };
 		for (auto dir : dirs) {
 			dir = normalize(dir);
+			//dir = vec2f(dir.y, -dir.x);
 			float p11, p12, p21, p22;
 			{
 				auto [i1, i2] = getParTangents(dir, poly1);
@@ -105,6 +107,7 @@ public:
 		coll.normal = -norm;
 		coll.point = getCenter(convexIntersecton(poly1, opoly1));
 		coll.depth = aln;
+		drawhui.push_back({ convexIntersecton(poly1, opoly1), GLYELLOW });
 		return coll;
 	}
 
