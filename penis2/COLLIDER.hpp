@@ -4,6 +4,7 @@
 #include "TRANSFORM.hpp"
 #include "COLLISION.hpp"
 #include "GEOMSTRUCTS.hpp"
+#include "DRAWHUI.h"
 
 struct PolygonCollider;
 
@@ -38,7 +39,7 @@ public:
 	PolygonCollider() = default;
 	PolygonCollider(const Polygonf& circle1) {
 		poly = circle1;
-		poly.normalizeOrder();
+		poly = convexHull(poly);
 
 		_center = getCenter(poly);
 		for (auto p : poly) {
@@ -58,18 +59,19 @@ public:
 		auto poly1 = getAbsPoly();
 		auto opoly1 = other->getAbsPoly();
 
-		std::vector <vec2f> dirs1, dirs2;
+		std::vector <vec2f> dirs;
 		for (int i = 0; i < poly1.size(); ++i) {
-			dirs1.push_back(poly1.get(i + 1) - poly1.get(i));
+			dirs.push_back(poly1.get(i + 1) - poly1.get(i));
 		}
 		for (int i = 0; i < opoly1.size(); ++i) {
-			dirs2.push_back(-opoly1.get(i + 1) + opoly1.get(i));
+			dirs.push_back(opoly1.get(i + 1) - opoly1.get(i));
 		}
 
 		float aln = 0;
 		vec2f norm = { 0, 0 };
-		for (auto dir : dirs1) {
+		for (auto dir : dirs) {
 			dir = normalize(dir);
+			//dir = vec2f(dir.y, -dir.x);
 			float p11, p12, p21, p22;
 			{
 				auto [i1, i2] = getParTangents(dir, poly1);
@@ -84,56 +86,14 @@ public:
 				if (p21 > p22) std::swap(p21, p22);
 			}
 
-			if (p11 > p22 || p21 > p12) return Collision{};
-
-			if (p12 > p21) {
-				
-				if (len(norm) == 0 || p12 - p21 < aln) {
-					aln = p12 - p21;
-					norm = { dir.y, -dir.x };
-				}
-			}
-			else {
-				if (len(norm) == 0 || p22 - p11 < aln) {
-					aln = p22 - p11;
-					norm = { -dir.y, dir.x };
-				}
-			}
+			if (p11 + 1e-6 >= p22 || p21 + 1e-6 >= p12) return Collision{};
 			
-			/*if (norm == vec2f(0, 0) || abs(p22 - p11) < aln) {
-				aln = abs(p22 - p11);
+			if (norm == vec2f(0, 0) || p22 - p11 < aln) {
+				aln = p22 - p11;
 				norm = { -dir.y, dir.x };
 			}
-			if (norm == vec2f(0, 0) || abs(p12 - p21) < aln) {
-				aln = abs(p12 - p21);
-				norm = { dir.y, -dir.x };
-			}*/
-		}
-
-		for (auto dir : dirs2) {
-			dir = normalize(dir);
-			float p11, p12, p21, p22;
-			{
-				auto [i1, i2] = getParTangents(dir, poly1);
-				p11 = cross(dir, poly1[i1]);
-				p12 = cross(dir, poly1[i2]);
-				if (p11 > p12) std::swap(p11, p12);
-			}
-			{
-				auto [i1, i2] = getParTangents(dir, opoly1);
-				p21 = cross(dir, opoly1[i1]);
-				p22 = cross(dir, opoly1[i2]);
-				if (p21 > p22) std::swap(p21, p22);
-			}
-
-			if (p11 > p22 || p21 > p12) return Collision{};
-
-			if (norm == vec2f(0, 0) || abs(p22 - p11) < aln) {
-				aln = abs(p22 - p11);
-				norm = { -dir.y, dir.x };
-			}
-			if (norm == vec2f(0, 0) || abs(p12 - p21) < aln) {
-				aln = abs(p12 - p21);
+			if (norm == vec2f(0, 0) || p12 - p21 < aln) {
+				aln = p12 - p21;
 				norm = { dir.y, -dir.x };
 			}
 		}
@@ -147,6 +107,8 @@ public:
 		coll.normal = -norm;
 		coll.point = getCenter(convexIntersecton(poly1, opoly1));
 		coll.depth = aln;
+		drawhui.push_back({ convexIntersecton(poly1, opoly1), GLYELLOW });
+		//debug << coll.point.x << ' ' << coll.point.y << '\n';
 		return coll;
 	}
 

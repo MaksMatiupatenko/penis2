@@ -115,7 +115,7 @@ using Polygoni = Polygon_t<INT>;
 ///Consider go fuck yourself.
 using Polygonl = Polygon_t<INT64>;
 
-using Polygonf = Polygon_t<FLOAT>;
+
 using Polygond = Polygon_t<FLOAT64>;
 
 Polygonf getCircleModel(float radius, int N = 50) {
@@ -123,7 +123,7 @@ Polygonf getCircleModel(float radius, int N = 50) {
 	const FLOAT rot = 2 * PI / N;
 	Polygonf polygon;
 	for (int n = 0; n < N; ++n, cur = rotatem(rot) * cur) {
-		polygon.push_back(cur);
+		polygon.push(cur);
 	}
 	return polygon;
 }

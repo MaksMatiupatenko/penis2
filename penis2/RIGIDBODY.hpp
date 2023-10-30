@@ -4,6 +4,7 @@
 #include "DRAWABLE.hpp"
 #include "DRAWHUI.h"
 #include "GRAVITY.h"
+#include <iomanip>
 
 struct RigidBody : public Transform {
 private:
@@ -17,22 +18,16 @@ private:
 public:
 	vec2f velocity{};
 	float rotVel{};
-	/// умоляю назови это поле самым ебанутымм английским словом которое знаешь
-	/// 7-8 бляяяяяяять
+	/// ГіГ¬Г®Г«ГїГѕ Г­Г Г§Г®ГўГЁ ГЅГІГ® ГЇГ®Г«ГҐ Г±Г Г¬Г»Г¬ ГҐГЎГ Г­ГіГІГ»Г¬Г¬ Г Г­ГЈГ«ГЁГ©Г±ГЄГЁГ¬ Г±Г«Г®ГўГ®Г¬ ГЄГ®ГІГ®Г°Г®ГҐ Г§Г­Г ГҐГёГј
+	/// 7-8 ГЎГ«ГїГїГїГїГїГїГїГІГј
 	/// 
-	/// сэр есть сэр пошел нахуй мудень
+	/// Г±ГЅГ° ГҐГ±ГІГј Г±ГЅГ° ГЇГ®ГёГҐГ« Г­Г ГµГіГ© Г¬ГіГ¤ГҐГ­Гј
 	float restitution{};
 	Collider* collider{};
 	
 	RigidBody() = default;
 
-	/// <summary>
-	/// Если массу в 0 поставить, то объект не будет двигаться никогда
-	/// </summary>
-	/// <param name="_mass"></param>
-	/// <param name="_restitution"></param>
-	/// <param name="_collider"></param>
-	/// <param name="drawable"></param>
+	/// Г…Г±Г«ГЁ Г¬Г Г±Г±Гі Гў 0 ГЇГ®Г±ГІГ ГўГЁГІГј, ГІГ® Г®ГЎГєГҐГЄГІ Г­ГҐ ГЎГіГ¤ГҐГІ Г¤ГўГЁГЈГ ГІГјГ±Гї Г­ГЁГЄГ®ГЈГ¤Г 
 	RigidBody(
 		float _mass, float _restitution,
 		Collider* _collider,
@@ -143,78 +138,30 @@ void resolveCollision(RigidBody& A, RigidBody& B) {
 		return;
 	}
 
-	vec2f posa = A.getRMat() * pos;
-	vec2f posb = B.getRMat() * pos;
+	debug << std::fixed << std::setprecision(10) << normal.x << ' ' << normal.y << std::endl;
 
-	auto m1 = A.getPointDirInvMass(posa, normal);
-	auto m2 = B.getPointDirInvMass(posb, -normal);
+	//vec2f posa = A.getRMat() * pos;
+	//vec2f posb = B.getRMat() * pos;
 
-
-	vec2f rv = -B.getPointVel(posb) + A.getPointVel(posa);
-
-	float velAlongNormal = dt(rv, normal);
-	if (velAlongNormal < 0) {
-		float e = min(A.restitution, B.restitution);
-		float j = -(1 + e) * velAlongNormal;
-		j /= m1 + m2;
-		vec2f impulse = normal * j;
-		A.velocity += impulse * m1;
-		B.velocity -= impulse * m2;
-		//A.addImpulse(posa, impulse);
-		//B.addImpulse(posb, -impulse);
-	}
-
-	const float percent = 0.25;
-	vec2f correction = normal * (depth / (m1 + m2) * percent);
-	A.move(correction * m1);
-	B.move(-correction * m2);
-
-
-	// ВОТ СНИЗУ ПОЛНАЯ ХУЙНЯ
-	/*vec2f posa = A.getRMat() * pos;
-	vec2f posb = B.getRMat() * pos;
-
-	auto m1 = A.getPointDirInvMass(posa, normal);
-	auto m2 = B.getPointDirInvMass(posb, -normal);
+	auto m1 = A.getInvMass();
+	auto m2 = B.getInvMass();
 	const float hui = 0.9;
 
-	vec2f rv = -B.getPointVel(posb) + A.getPointVel(posa);
-	float velAlongNormal = dt(rv, normal);
+	vec2f rv = -B.velocity + A.velocity;
+	float velAlongNormal = dot(rv, normal);
 	if (velAlongNormal < 0) {
 		float e = min(A.restitution, B.restitution);
 		float j = -(1 + e) * velAlongNormal;
 		j /= m1 + m2;
 		vec2f impulse = normal * j;
-		A.addImpulse(posa, impulse);
-		B.addImpulse(posb, -impulse);
+		A.addImpulse({}, impulse);
+		B.addImpulse({}, -impulse);
 	}
 
-	A.move(normal * hui * depth * m1 / (m1 + m2));
-	B.move(-normal * hui * depth * m2 / (m1 + m2));
+	A.absMove(normal * hui * depth * m1 / (m1 + m2));
+	B.absMove(-normal * hui * depth * m2 / (m1 + m2));
 
-	int multiplier = 1;
-	if (A.getDrawable()->box().size() != 3) {
-		multiplier = -1;
-	}
-
-	if (normal * multiplier == vec2f{ 0, -1 }) {
-		debug << "pizdec\n";
-		if (multiplier == -1) {
-			debug << "sex\n";
-		}
-		auto* C = (multiplier == 1 ? &A : &B);
-		auto mat = C->getMat();
-		Polygonf poly = C->getDrawable()->box();
-		for (auto& i : poly) {
-			i = mat * i;
-		}
-		for (auto i : poly) {
-			debug << i.x << " " << i.y << "\n";
-		}
-		debug << "--------------------\n" << std::endl;
-	}*/
-
-	/*Polygonf strelka;
+	Polygonf strelka;
 	strelka.push(0.1, -1);
 	strelka.push(0.1, 0.6);
 	strelka.push(0.4, 0.6);
@@ -229,5 +176,5 @@ void resolveCollision(RigidBody& A, RigidBody& B) {
 	dr.setAngle(atan2(-normal.x, normal.y));
 
 
-	drawhui.push_back(dr);*/
+	drawhui.push_back(dr);
 }
