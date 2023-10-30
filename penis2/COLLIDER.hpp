@@ -39,7 +39,7 @@ public:
 	PolygonCollider() = default;
 	PolygonCollider(const Polygonf& circle1) {
 		poly = circle1;
-		poly.normalizeOrder();
+		poly = convexHull(poly);
 
 		_center = getCenter(poly);
 		for (auto p : poly) {
@@ -86,14 +86,14 @@ public:
 				if (p21 > p22) std::swap(p21, p22);
 			}
 
-			if (p11 >= p22 || p21 >= p12) return Collision{};
+			if (p11 + 1e-6 >= p22 || p21 + 1e-6 >= p12) return Collision{};
 			
-			if (norm == vec2f(0, 0) || abs(p22 - p11) < aln) {
-				aln = abs(p22 - p11);
+			if (norm == vec2f(0, 0) || p22 - p11 < aln) {
+				aln = p22 - p11;
 				norm = { -dir.y, dir.x };
 			}
-			if (norm == vec2f(0, 0) || abs(p12 - p21) < aln) {
-				aln = abs(p12 - p21);
+			if (norm == vec2f(0, 0) || p12 - p21 < aln) {
+				aln = p12 - p21;
 				norm = { dir.y, -dir.x };
 			}
 		}
@@ -108,6 +108,7 @@ public:
 		coll.point = getCenter(convexIntersecton(poly1, opoly1));
 		coll.depth = aln;
 		drawhui.push_back({ convexIntersecton(poly1, opoly1), GLYELLOW });
+		//debug << coll.point.x << ' ' << coll.point.y << '\n';
 		return coll;
 	}
 

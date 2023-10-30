@@ -4,6 +4,7 @@
 #include "DRAWABLE.hpp"
 #include "DRAWHUI.h"
 #include "GRAVITY.h"
+#include <iomanip>
 
 struct RigidBody : public Transform {
 private:
@@ -24,13 +25,7 @@ public:
 	
 	RigidBody() = default;
 
-	/// <summary>
 	/// Если массу в 0 поставить, то объект не будет двигаться никогда
-	/// </summary>
-	/// <param name="_mass"></param>
-	/// <param name="_restitution"></param>
-	/// <param name="_collider"></param>
-	/// <param name="drawable"></param>
 	RigidBody(
 		float _mass, float _restitution,
 		Collider* _collider,
@@ -141,26 +136,28 @@ void resolveCollision(RigidBody& A, RigidBody& B) {
 		return;
 	}
 
-	vec2f posa = A.getRMat() * pos;
-	vec2f posb = B.getRMat() * pos;
+	debug << std::fixed << std::setprecision(10) << normal.x << ' ' << normal.y << std::endl;
 
-	auto m1 = A.getPointDirInvMass(posa, normal);
-	auto m2 = B.getPointDirInvMass(posb, -normal);
+	//vec2f posa = A.getRMat() * pos;
+	//vec2f posb = B.getRMat() * pos;
+
+	auto m1 = A.getInvMass();
+	auto m2 = B.getInvMass();
 	const float hui = 0.9;
 
-	vec2f rv = -B.getPointVel(posb) + A.getPointVel(posa);
-	float velAlongNormal = dt(rv, normal);
+	vec2f rv = -B.velocity + A.velocity;
+	float velAlongNormal = dot(rv, normal);
 	if (velAlongNormal < 0) {
 		float e = min(A.restitution, B.restitution);
 		float j = -(1 + e) * velAlongNormal;
 		j /= m1 + m2;
 		vec2f impulse = normal * j;
-		A.addImpulse(posa, impulse);
-		B.addImpulse(posb, -impulse);
+		A.addImpulse({}, impulse);
+		B.addImpulse({}, -impulse);
 	}
 
-	A.move(normal * hui * depth * m1 / (m1 + m2));
-	B.move(-normal * hui * depth * m2 / (m1 + m2));
+	A.absMove(normal * hui * depth * m1 / (m1 + m2));
+	B.absMove(-normal * hui * depth * m2 / (m1 + m2));
 
 	Polygonf strelka;
 	strelka.push(0.1, -1);
@@ -177,5 +174,5 @@ void resolveCollision(RigidBody& A, RigidBody& B) {
 	dr.setAngle(atan2(-normal.x, normal.y));
 
 
-	//drawhui.push_back(dr);
+	drawhui.push_back(dr);
 }

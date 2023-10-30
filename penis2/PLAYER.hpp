@@ -17,7 +17,7 @@ private:
 		const FLOAT rot = 2 * PI / N;
 		Polygonf polygon;
 		for (int n = 0; n < N; ++n, cur = rotatem(rot) * cur) {
-			polygon.push_back(cur);
+			polygon.push(cur);
 		}
 		obstacle = new PolygonObstacle(polygon, GLRED);
 	}
@@ -49,11 +49,6 @@ public:
 	bool collide(const PolygonObstacle& obstacle1) {
 		copyTransform(obstacle, this);
 		return obstacle->collide(obstacle1);
-	}
-
-	vec2f getCollNormal(const PolygonObstacle& obstacle1) {
-		copyTransform(obstacle, this);
-		return obstacle->getCollNormal(obstacle1);
 	}
 
 	~__PLAYER() {

@@ -7,11 +7,10 @@
 #include <algorithm>
 
 template <typename FLOATTYPE>
-class __POLYGON : public std::vector<vec2<FLOATTYPE>> {
+class __POLYGON {
 private:
 
 	using TYPE = FLOATTYPE;
-	using BASE = std::vector<vec2<TYPE>>;
 
 	using TREFERENCE = TYPE&;
 	using TCONSTREFERENCE = CONST TYPE&;
@@ -28,26 +27,84 @@ private:
 
     using POLYGON = __POLYGON<TYPE>;
 
-public:
 
-	using BASE::BASE;
+    std::vector <vec2 <FLOATTYPE>> data;
+
+public:
+    __POLYGON <FLOATTYPE>() {}
+    __POLYGON <FLOATTYPE>(std::initializer_list <VEC> init) {
+        data = init;
+    }
+
+    int size() const {
+        return data.size();
+    }
+
+    CVREF operator[](int ind) const {
+        return data[(ind % size() + size()) % size()];
+    }
+
+    VREF operator[](int ind) {
+        return data[(ind % size() + size()) % size()];
+    }
 
     CVREF get(int pos) const {
-        return BASE::operator[]((pos % (int)BASE::size() + (int)BASE::size()) % (int)BASE::size());
+        return (*this)[pos];
     }
 
     VREF get(int pos) {
-        return BASE::operator[]((pos % (int)BASE::size() + (int)BASE::size()) % (int)BASE::size());
+        return (*this)[pos];
     }
 
     void push(CTREF x, CTREF y) {
-        BASE::emplace_back(x, y);
+        data.emplace_back(x, y);
     }
 
-    static bool isConvex(POLYGON polygon) {
+    void push(const VEC v) {
+        data.push_back(v);
+    }
+
+    bool empty() const {
+        return data.empty();
+    }
+
+    decltype(auto) begin() {
+        return data.begin();
+    }
+    decltype(auto) end() {
+        return data.end();
+    }
+    decltype(auto) rbegin() {
+        return data.begin();
+    }
+    decltype(auto) rend() {
+        return data.end();
+    }
+    decltype(auto) cbegin() const {
+        return data.cbegin();
+    }
+    decltype(auto) cend() const {
+        return data.cend();
+    }
+    decltype(auto) crbegin() const {
+        return data.cbegin();
+    }
+    decltype(auto) crend() const {
+        return data.cend();
+    }
+
+    decltype(auto) erase(decltype(data.cbegin()) it) {
+        return data.erase(it);
+    }
+
+    void pop() {
+        data.pop_back();
+    }
+
+    friend bool isConvex(POLYGON p) {
         unsigned char flag = 0;
-        for (size_t i = 0; i < polygon.size(); ++i) {
-            TYPE cross = crss(VEC(polygon.get(i), polygon.get(i + 1)), VEC(polygon.get(i + 1), polygon.get(i + 2)));
+        for (size_t i = 0; i < p.size(); ++i) {
+            auto cross = crss(p[i + 1] - p[i], p[i + 2] - p[i + 1]);
             if (cross < 0) {
                 flag |= 1;
             }
@@ -58,7 +115,7 @@ public:
         return flag != 3;
     }
 
-    static bool contains(const POLYGON& a, const vec2f& p) {
+    friend bool contains(const POLYGON& a, const vec2f& p) {
         float angle = 0;
         for (int i = 0; i < a.size(); ++i) {
             angle += atan2(crss(a.get(i) - p, a.get(i + 1) - p), dt(a.get(i) - p, a.get(i + 1) - p));
@@ -66,41 +123,14 @@ public:
         return abs(angle) > acos(-1);
     }
 
-    static vec2f getNormal(const POLYGON& a, const vec2f& p) {
-        float adst = 1e10;
-        int ind = 0;
-        for (int i = 0; i < a.size(); ++i) {
-            if (segmentDist(a.get(i + 1), a.get(i), p) < adst) {
-                adst = segmentDist(a.get(i + 1), a.get(i), p);
-                ind = i;
-            }
-        }
-
-        return normalize(vec2f((a.get(ind + 1) - a.get(ind)).y, -(a.get(ind + 1) - a.get(ind)).x));
-    }
-
-    static vec2f getCollNormal(const POLYGON& a, const POLYGON& b) {
+    friend bool intersect(const POLYGON& a, const POLYGON& b) {
         for (size_t i = 0; i < a.size(); ++i) {
-            if (POLYGON::contains(b, a.get(i))) {
-                return getNormal(b, a.get(i));
-            }
-        }
-        for (size_t i = 0; i < b.size(); ++i) {
-            if (POLYGON::contains(a, b.get(i))) {
-                return getNormal(a, b.get(i));
-            }
-        }
-        return { 0, 0 };
-    }
-
-    static bool intersect(const POLYGON& a, const POLYGON& b) {
-        for (size_t i = 0; i < a.size(); ++i) {
-            if (POLYGON::contains(b, a.get(i))) {
+            if (contains(b, a.get(i))) {
                 return true;
             }
         }
         for (size_t i = 0; i < b.size(); ++i) {
-            if (POLYGON::contains(a, b.get(i))) {
+            if (contains(a, b.get(i))) {
                 return true;
             }
         }
@@ -115,20 +145,62 @@ public:
         return false;
     }
 
-    void normalizeOrder() {
-        if (BASE::empty()) return;
+    template <typename type>
+    friend __POLYGON <type> convexHull(__POLYGON <type> p) {
+        if (p.empty()) return {};
 
-        std::sort(BASE::begin(), BASE::end(), [&](CVREF a, CVREF b) {
+        std::sort(p.begin(), p.end(), [&](const vec2 <type>& a, const vec2 <type>& b) {
             if (a.x == b.x) return a.y < b.y;
             return a.x < b.x;
-             });
-        std::sort(BASE::begin() + 1, BASE::end(), [&](CVREF a, CVREF b) {
+                  });
+        std::sort(p.begin() + 1, p.end(), [&](const vec2 <type>& a, const vec2 <type>& b) {
+            return cross(a - p[0], b - p[0]) > 0;
+                  });
+
+        __POLYGON <type> ans;
+        for (auto v : p) {
+            while (ans.size() > 1 && cross(ans[-1] - ans[-2], v - ans[-1]) <= 0) {
+                ans.pop();
+            }
+            ans.push(v);
+        }
+
+        return ans;
+    }
+
+    void normalizeOrder() {
+        if (empty()) return;
+
+        std::sort(begin(), end(), [&](CVREF a, CVREF b) {
+            if (a.x == b.x) return a.y < b.y;
+            return a.x < b.x;
+                  });
+        std::sort(begin() + 1, end(), [&](CVREF a, CVREF b) {
             return cross(a - get(0), b - get(0)) > 0;
-             });
+                  });
     }
 };
 
-__POLYGON <float> convexIntersecton(__POLYGON <float>& p1, __POLYGON <float>& p2) {
+using Polygonf = __POLYGON <FLOAT>;
+
+
+
+bool convexContains(const Polygonf& poly, const vec2f& p) {
+    if (poly.size() <= 4) return contains(poly, p);
+
+    if (cross(poly[1] - poly[0], p - poly[0]) < 0 || cross(poly[-1] - poly[0], p - poly[0]) > 0) return false;
+
+    int l = 1, r = poly.size();
+    while (l + 1 != r) {
+        int m = (l + r) / 2;
+        if (cross(poly[m] - poly[0], p - poly[0]) < 0) r = m;
+        else l = m;
+    }
+
+    return cross(poly[r] - poly[l], p - poly[l]) > 0;
+}
+
+Polygonf convexIntersecton(const Polygonf& p1, const Polygonf& p2) {
     std::vector <std::pair <vec2f, vec2f>> pls;
     for (int i = 0; i < p1.size(); ++i) {
         vec2f norm = p1.get(i + 1) - p1.get(i);
@@ -139,7 +211,7 @@ __POLYGON <float> convexIntersecton(__POLYGON <float>& p1, __POLYGON <float>& p2
         pls.push_back({ p2.get(i), normalize(norm) });
     }
 
-    std::sort(pls.begin(), pls.end(), [&](const std::pair <vec2f, vec2f>& a, const std::pair <vec2f, vec2f>& b) {
+    sort(pls.begin(), pls.end(), [&](const std::pair <vec2f, vec2f>& a, const std::pair <vec2f, vec2f>& b) {
         if (a.second.y > 0 && b.second.y < 0) return true;
         if (a.second.y < 0 && b.second.y > 0) return false;
         if (a.second.y == 0 && b.second.y == 0) return a.second.x > b.second.x;
@@ -183,22 +255,19 @@ __POLYGON <float> convexIntersecton(__POLYGON <float>& p1, __POLYGON <float>& p2
         }
     }
 
-    std::vector <int> ind(pls.size(), -1);
-    for (int i = 0; i < st.size(); ++i) {
-        if (ind[st[i]] != -1) {
-            std::vector <int> v(st.begin() + ind[st[i]], st.begin() + i);
-            __POLYGON <float> ans;
-            for (int j = 0; j < v.size(); ++j) {
-                ans.push_back(inter(pls[v[j]], pls[v[(j + 1) % v.size()]]));
-            }
-            return ans;
-        }
-        else {
-            ind[st[i]] = i;
-        }
+
+    std::vector <int> cnt(pls.size(), 0);
+    for (auto x : st) ++cnt[x];
+    std::vector <std::pair <vec2f, vec2f>> pls1;
+    for (int i = 0; i < pls.size(); ++i) {
+        if (cnt[i] == 2) pls1.push_back(pls[i]);
+    }
+    Polygonf ans;
+    for (int i = 0; i < pls1.size(); ++i) {
+        ans.push(inter(pls1[i], pls1[(i + 1) % pls1.size()]));
     }
 
-    return {};
+    return ans;
 }
 
 /// и какого ху€ это в класс завернуто бл€ть?
@@ -266,10 +335,6 @@ public:
         }
 
         int l1 = 0, l2 = 0;
-        /*for (int i = 0; i < polygon.size(); ++i) {
-            if (cross(polygon.get(i), dir) < cross(polygon.get(l1), dir)) l1 = i;
-            if (cross(polygon.get(i), dir) > cross(polygon.get(l2), dir)) l2 = i;
-        }*/
 
         for (int k = lg; k >= 0; --k) {
             vec_t v1 = polygon.get(l1 - (1 << k));
@@ -352,7 +417,7 @@ private:
 
 public:
     static std::vector <Triangle> get(const POLYGON& polygon) {
-        if (POLYGON::isConvex(polygon)) {
+        if (isConvex(polygon)) {
             return convexTriangulation(polygon);
         } 
         return nonConvexTriangulation(polygon);
