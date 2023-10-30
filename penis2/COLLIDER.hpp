@@ -112,6 +112,7 @@ public:
 		return coll;
 	}
 
+
 	vec2f center() const override {
 		return _center;
 	}
